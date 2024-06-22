@@ -1,4 +1,4 @@
 node_modules/
 .env
-src/config/sslDB.crt.pem
+src/config/DigiCertGlobalRootCA.crt.pem
 **/.DS_Store
