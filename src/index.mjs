@@ -1,4 +1,5 @@
 import express from 'express'
+import dbConn from "./config/database.mjs";
 const app = express()
 import dotenv from 'dotenv';
 dotenv.config();
@@ -13,6 +14,10 @@ app.get('/api/users', (req, res) => {
         {id:2,user:'test2',displayName:'testifyw'}
     ]);
 })
+dbConn.connect(function (err) {
+    if (err) throw err;
+    console.log("Database Connected!");
+});
 app.listen(PORT,() =>{
     console.log(`Server is running on Port:${PORT}`)
 })
