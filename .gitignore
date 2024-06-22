@@ -1,4 +1,4 @@
 node_modules/
 .env
 src/config/sslDB.crt.pem
-.DS_Store
+**/.DS_Store
