@@ -35,12 +35,12 @@ const initDB = async () => {
     const createLoyaltyProgramTableQuery = `
         CREATE TABLE IF NOT EXISTS LoyaltyProgram (
             programId BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
-            Name VARCHAR(255) NOT NULL,
-            Description TEXT,
-            CurrencyName VARCHAR(255),
+            name VARCHAR(255) NOT NULL,
+            description TEXT,
+            currencyName VARCHAR(255),
             currencyRate FLOAT NOT NULL,
-            Company VARCHAR(255),
-            EnrollmentLink VARCHAR(255)
+            company VARCHAR(255),
+            enrollmentLink VARCHAR(255)
         );
     `;
 
@@ -65,6 +65,8 @@ const initDB = async () => {
         SELECT 
             BIN_TO_UUID(U.userID) AS userID,
             U.userName,
+            U.firstName,
+            U.lastName,
             U.password,
             U.membershipType,
             U.mobileNumber,

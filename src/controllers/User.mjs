@@ -8,13 +8,12 @@ const generateToken = (user) => {
 
 export const registerUser = async (req, res) => {
     const { userName, password, firstName, lastName, email, membershipType, mobileNumber } = req.body;
-    const hashedPassword = await argon2.hash(password);
     try {
         const existingUser = await User.findByEmail(email);
         if (existingUser) {
             return res.status(400).json({ error: 'User already exists' });
         }
-        const userId = await User.create({ userName, password: hashedPassword, firstName, lastName, membershipType, mobileNumber, email });
+        const userId = await User.create({ userName, password, firstName, lastName, membershipType, mobileNumber, email });
         res.status(201).json({ userId });
     } catch (error) {
         console.error('Registration error:', error);

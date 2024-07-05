@@ -20,7 +20,7 @@ class User {
         const hashedPassword = await argon2.hash(password);
         const query = `
             INSERT INTO User (userName, password, firstName, lastName, membershipType, mobileNumber, email, pointsCount)
-            VALUES (?, ?, ?, ?, ?, 0)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 0)
         `;
         const values = [userName, hashedPassword, firstName, lastName, membershipType, mobileNumber, email];
         try {
@@ -56,7 +56,7 @@ class User {
                 pointsCount,
                 pointsRecord,
                 userRewardsRequests
-            FROM UserRewardsView
+            FROM UserView
         `;
         try {
             const [rows] = await pool.query(query);
@@ -70,7 +70,7 @@ class User {
     static async findById(userID) {
         const query = `
             SELECT 
-                BIN_TO_UUID(U.userID) AS userID,
+                BIN_TO_UUID(userID) AS userID,
                 userName,
                 password,
                 firstName,
@@ -81,7 +81,7 @@ class User {
                 pointsCount,
                 pointsRecord,
                 userRewardsRequests
-            FROM UserRewardsView
+            FROM UserView
             WHERE userID = UUID_TO_BIN(?)
         `;
         const values = [userID];
@@ -100,7 +100,7 @@ class User {
     static async findByEmail(userEmail) {
         const query = `
             SELECT 
-                BIN_TO_UUID(U.userID) AS userID,
+                BIN_TO_UUID(userID) AS userID,
                 userName,
                 password,
                 firstName,
@@ -111,7 +111,7 @@ class User {
                 pointsCount,
                 pointsRecord,
                 userRewardsRequests
-            FROM UserRewardsView
+            FROM UserView
             WHERE email = ?
         `;
         const values = [userEmail];
@@ -130,7 +130,7 @@ class User {
     static async findByUserName(userName) {
         const query = `
             SELECT 
-                BIN_TO_UUID(U.userID) AS userID,
+                BIN_TO_UUID(userID) AS userID,
                 userName,
                 password,
                 firstName,
@@ -141,7 +141,7 @@ class User {
                 pointsCount,
                 pointsRecord,
                 userRewardsRequests
-            FROM UserRewardsView
+            FROM UserView
             WHERE userName = ?
         `;
         const values = [userName];
