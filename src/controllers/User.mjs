@@ -40,3 +40,28 @@ export const loginUser = async (req, res) => {
         res.status(500).json({ error: 'Login failed' });
     }
 };
+
+export const getProfile = async (req, res) => {
+    const userID = req.user.userID;
+
+    try {
+        const user = await User.findById(userID);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json({
+            userID: user.userID,
+            userName: user.userName,
+            membershipType: user.membershipType,
+            mobileNumber: user.mobileNumber,
+            email: user.email,
+            pointsCount: user.pointsCount,
+            pointsRecord: user.pointsRecord,
+            userRewardsRequests: user.userRewardsRequests
+            // Add other properties as needed
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching user profile', error: err.message });
+    }
+};
