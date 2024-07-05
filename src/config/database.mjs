@@ -63,7 +63,7 @@ const initDB = async () => {
     const createUserViewQuery = `
         CREATE VIEW UserView AS
         SELECT 
-            BIN_TO_UUID(U.userID) AS userID,
+            U.userID,
             U.userName,
             U.firstName,
             U.lastName,
@@ -108,7 +108,7 @@ const initDB = async () => {
         await dbPool.query(createUserTableQuery);
         await dbPool.query(createLoyaltyProgramTableQuery);
         await dbPool.query(createRewardsRecordTableQuery);
-        // await dbPool.query(createUserViewQuery);
+        await dbPool.query(createUserViewQuery);
         console.log('Database initialized');
     } catch (err) {
         console.error('Error initializing database:', err);
