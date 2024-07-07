@@ -157,6 +157,33 @@ class User {
         }
     }
 
+    static async getAllUser() {
+        const query = `
+            SELECT 
+                BIN_TO_UUID(userID) AS userID,
+                userName,
+                firstName,
+                lastName,
+                membershipType,
+                mobileNumber,
+                email,
+                pointsCount,
+                pointsRecord,
+                userRewardsRequests
+            FROM UserView
+        `;
+        try {
+            const [rows] = await dbPool.query(query);
+            if (rows.length === 0) {
+                return null;
+            }
+            return new User(rows[0]);
+        } catch (err) {
+            console.error('Error finding Users', err);
+            throw err;
+        }
+    }
+
 
 
 }
