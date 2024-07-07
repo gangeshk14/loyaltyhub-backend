@@ -18,7 +18,7 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production' // Use secure cookies in production
     }
 }));
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT
 app.use('/', routes);
 
 app.listen(PORT,() =>{

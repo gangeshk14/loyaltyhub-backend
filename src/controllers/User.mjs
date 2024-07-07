@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import User from '../models/User.mjs';
 
 const generateToken = (user) => {
-    return jwt.sign({ userId: user.userID, email: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+    return jwt.sign({ userID: user.userID, userName:user.userName, email: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 };
 
 export const registerUser = async (req, res) => {
@@ -22,9 +22,9 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { userName, password } = req.body;
     try {
-        const user = await User.findByEmail(email);
+        const user = await User.findByUserName(userName);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -42,7 +42,7 @@ export const loginUser = async (req, res) => {
 
 export const getProfile = async (req, res) => {
     const userID = req.user.userID;
-
+    console.log(req.user)
     try {
         const user = await User.findById(userID);
 
