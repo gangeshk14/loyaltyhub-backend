@@ -31,7 +31,7 @@ class RewardsRecord{
         }
     }
 
-    // method here to update reward amount based on info
+    // method here to update reward amount based on info from loyalty program?
 
     //Find all records
 
