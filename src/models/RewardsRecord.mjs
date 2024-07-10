@@ -10,7 +10,7 @@ class RewardsRecord{
         this.points = rewardsRecord.points;
         this.rewardType = rewardsRecord.rewardType;
         this.rewardAmount = rewardsRecord.rewardAmount;
-        this.status = rewardsRecord.status || "PENDING";
+        this.status = rewardsRecord.status
         this.purpose = rewardsRecord.purpose;
     }
 
