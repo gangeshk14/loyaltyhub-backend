@@ -31,9 +31,53 @@ class RewardsRecord{
         }
     }
 
+    static async findById(recordID) {
+        const query = `
+            SELECT * FROM RewardsRecord WHERE recordID = ?
+        `;
+        const values = [recordID];
+        try {
+            const [rows] = await dbPool.query(query, values);
+            if (rows.length === 0) {
+                return null;
+            }
+            return new RewardsRecord(rows[0])
+        } catch (err) {
+            console.error('Error finding rewards record by ID:', err);
+            throw err;
+        }
+    }
+
+    static async findByUserID(userID) {
+        const query = `
+            SELECT * FROM RewardsRecord WHERE userID = ?
+        `;
+        const values = [userID];
+        try {
+            const [rows] = await dbPool.query(query, values);
+            return rows.map(row => new RewardsRecord(row));
+        } catch (err) {
+            console.error('Error finding rewards record by user ID:', err);
+            throw err;
+        }
+    }
+
+    static async updateStatus(recordID, status){
+        const query = `
+            UPDATE RewardsRecord SET status = ? WHERE recordID = ?
+        `;
+        const values = [status, recordID];
+        try {
+            await dbPool.query(query, values);
+            return true;
+        } catch (err) {
+            console.error('Error updating status:', err);
+            throw err
+        }
+    }
+
     // method here to update reward amount based on info from loyalty program?
 
-    //Find all records
 
 
 }
