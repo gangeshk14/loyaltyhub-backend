@@ -15,10 +15,11 @@ class RewardsRecord{
     }
 
     //Create record
+    // check if user/loyalty program exists?
     static async create({userID, loyaltyProgramID, date, points, rewardType, status, purpose}) {
         const query = `
-            INSERT INTO RewardsRecord (date, UUID_TO_BIN(loyaltyProgramID), UUID_TO_BIN(userID), points, rewardType, status, purpose)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO RewardsRecord (date, loyaltyProgramID, userID, points, rewardType, status, purpose)
+            VALUES (?, UUID_TOBIN(?), UUID_TO_BIN(?), ?, ?, ?, ?)
         `;
         const values = [date, loyaltyProgramID, userID, points, rewardType, status, purpose];
         try {
