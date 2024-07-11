@@ -1,4 +1,5 @@
 import dbPool from "../config/database.mjs";
+import User from "./User.mjs";
 
 
 class RewardsRecord{
@@ -15,8 +16,16 @@ class RewardsRecord{
     }
 
     //Create record
-    // check if user/loyalty program exists?
     static async create({userID, loyaltyProgramID, date, points, rewardType, status, purpose}) {
+
+        if (!(await User.findById(userID))) {
+            throw new Error("User does not exist");
+        }
+
+        if (!(await RewardsRecord.findByLoyaltyProgramID(loyaltyProgramID))) {
+            throw new Error("Loyalty Program does not exist");
+        }
+
         const query = `
             INSERT INTO RewardsRecord (date, loyaltyProgramID, userID, points, rewardType, status, purpose)
             VALUES (?, UUID_TOBIN(?), UUID_TO_BIN(?), ?, ?, ?, ?)
@@ -63,6 +72,21 @@ class RewardsRecord{
         }
     }
 
+    static async findByLoyaltyProgramID(loyaltyProgramID) {
+        const query = `
+            SELECT * FROM RewardsRecord WHERE loyaltyProgramID = ?
+        `;
+        const values = [loyaltyProgramID];
+        try {
+            const [rows] = await dbPool.query(query, values);
+            return rows.map(row => new RewardsRecord(row));
+        } catch (err) {
+            console.error('Error finding rewards record by loyalty program ID:', err);
+            throw err;
+        }
+
+    }
+
     static async updateStatus(recordID, status){
         const query = `
             UPDATE RewardsRecord SET status = ? WHERE recordID = ?
@@ -77,7 +101,7 @@ class RewardsRecord{
         }
     }
 
-    // method here to update reward amount based on info from loyalty program?
+    // method here to update reward amount based on info from loyalty program? requires handback file processing
 
 
 
