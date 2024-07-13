@@ -12,7 +12,7 @@ class RewardsRecord{
         this.rewardType = rewardsRecord.rewardType;
         this.rewardAmount = rewardsRecord.rewardAmount;
         this.status = rewardsRecord.status
-        this.purpose = rewardsRecord.purpose;
+        this.purpose = rewardsRecord.purpose || null;
     }
 
     //Create record
