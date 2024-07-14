@@ -1,9 +1,12 @@
 import RewardsRecord from "../models/RewardsRecord.mjs";
-import user from "../models/User.mjs";
+import User from "../models/User.mjs";
 
 export const createRewardRecord = async (req, res) => {
     const { date, loyaltyProgramID, userID, points, rewardType, status, purpose } = req.body;
     try {
+        const user = await User.findById(userID);
+        const points = user.pointsCount;
+        const rewardType = user.membershipType;
         const newRewardsRecord = await RewardsRecord.create({date, loyaltyProgramID, userID, points, rewardType, status, purpose});
         res.status(201).json(newRewardsRecord);
     } catch (error) {
