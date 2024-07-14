@@ -15,10 +15,10 @@ router.post('/api/login', loginUser);
 router.get('/api/users', getUsers);
 router.get('/profile', authMiddleware, getProfile);
 
-router.post('/api/rewardsrecords', authMiddleware, createRewardRecord);
-router.get('/api/rewardsrecords/:recordID', authMiddleware, getRewardRecordById);
-router.get('/api/rewardsrecords/user/:userID', authMiddleware, getRewardRecordByUserID);
-router.put('/api/rewardsrecords/:recordID/status', authMiddleware, updateRewardsRecordStatus);
+router.post('/rewardsrecords', authMiddleware, createRewardRecord);
+router.get('/rewardsrecords/:recordID', authMiddleware, getRewardRecordById);
+router.get('/rewardsrecords/user/:userID', authMiddleware, getRewardRecordByUserID);
+router.put('/rewardsrecords/:recordID/status', authMiddleware, updateRewardsRecordStatus);
 
 
 export default router;
