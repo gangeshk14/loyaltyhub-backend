@@ -2,7 +2,7 @@ import express from 'express'
 import session from 'express-session';
 import cors from 'cors'
 import dbPool from "./config/database.mjs";
-import routes from './routes/index.mjs';
+import router from './routes/index.mjs';
 import dotenv from 'dotenv';
 const app = express()
 dotenv.config();
@@ -19,7 +19,7 @@ app.use(session({
     }
 }));
 const PORT = process.env.PORT
-app.use('/', routes);
+app.use(router);
 
 app.listen(PORT,() =>{
     console.log(`Server is running on Port:${PORT}`)

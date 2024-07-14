@@ -177,7 +177,7 @@ class User {
             if (rows.length === 0) {
                 return null;
             }
-            return new User(rows[0]);
+            return rows.map(row => new User(row));
         } catch (err) {
             console.error('Error finding Users', err);
             throw err;

@@ -67,22 +67,23 @@ export const getProfile = async (req, res) => {
 
 export const getUsers = async (req, res) => {
     try {
-        const user = await User.getAllUser();
+        const users = await User.getAllUser();
 
-        if (!user) {
+        if (!users) {
             return res.status(404).json({message: 'Users not found'});
         }
-        res.json({
+        res.json(users.map(user => ({
             userID: user.userID,
             userName: user.userName,
+            firstName: user.firstName,
+            lastName: user.lastName,
             membershipType: user.membershipType,
             mobileNumber: user.mobileNumber,
             email: user.email,
             pointsCount: user.pointsCount,
             pointsRecord: user.pointsRecord,
             userRewardsRequests: user.userRewardsRequests
-            // Add other properties as needed
-        });
+        })));
     } catch (err) {
         res.status(500).json({message: 'Error fetching users', error: err.message});
     }
