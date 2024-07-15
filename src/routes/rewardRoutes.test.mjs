@@ -21,7 +21,33 @@ describe ('RewardsRecord Requests', () => {
                 purpose: 'test purpose'
             })
                 .expect(201);
-        })
-    })
+        });
+    });
 
-})
+    describe ('GET /rewardsrecords/:recordID', () => {
+        it('should get reward record from id', async () => {
+            const response = await request(app).get(`/rewardsrecords/${recordID}`).set('Authorisation', `Bearer ${token}`)
+                .expect(response.body).toHaveProperty('id', recordID)
+                .expect(response.status).toBe(200);
+        });
+    });
+
+    describe ('GET /rewardsrecords/user/:userID', () => {
+        it('should get reward record from userID', async () => {
+            const response = await request(app).get(`/rewardsrecords/user/${userID}`).set('Authorisation', `Bearer ${token}`)
+                .expect(response.body).toHaveProperty('id', recordID)
+                .expect(response.status).toBe(200);
+        });
+    });
+
+    describe ('PUT /rewardsrecords/:recordID/status', () => {
+        it('should update reward record status', async () => {
+            const response = await request(app).put(`/rewardsrecords/${recordID}/status`).set('Authorisation', `Bearer ${token}`).send({
+                status: 'REJECTED'
+            })
+            .expect(response.status).toBe(200)
+            .expect(response.body).toHaveProperty('status', 'REJECTED')
+        });
+    });
+    
+});
