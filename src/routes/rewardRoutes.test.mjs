@@ -16,10 +16,11 @@ describe ('RewardsRecord Requests', () => {
     describe ('POST /rewardsrecords', () => {
         it('should create new reward record', async () => {
             const response = await request(app).post('/rewardsrecords').set('Authorisation', `Bearer ${token}`).send({
+                date: new Date(),
                 loyaltyProgramID: 'lp123',
-                userID: '1234567890123456',
-                
+                purpose: 'test purpose'
             })
+                .expect(201);
         })
     })
 
