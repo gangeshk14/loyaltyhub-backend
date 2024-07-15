@@ -20,7 +20,16 @@ app.use(session({
 }));
 const PORT = process.env.PORT
 app.use(router);
+process.on('SIGINT', async () => {
+    console.log('Closing database connection');
+    await dbPool.end();
+    console.log('Database connection closed');
+    process.exit(0); // Exit gracefully
+});
 
-app.listen(PORT,() =>{
-    console.log(`Server is running on Port:${PORT}`)
-})
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`Server is running on Port:${PORT}`)
+    })
+}
+export default app;

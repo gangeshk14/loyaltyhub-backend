@@ -61,7 +61,7 @@ const initDB = async () => {
     `;
 
     const createUserViewQuery = `
-        CREATE VIEW UserView AS
+        CREATE OR REPLACE VIEW UserView AS
         SELECT 
             U.userID,
             U.userName,
@@ -108,14 +108,14 @@ const initDB = async () => {
         await dbPool.query(createUserTableQuery);
         await dbPool.query(createLoyaltyProgramTableQuery);
         await dbPool.query(createRewardsRecordTableQuery);
-        // await dbPool.query(createUserViewQuery);
+        await dbPool.query(createUserViewQuery);
         console.log('Database initialized');
     } catch (err) {
         console.error('Error initializing database:', err);
     }
 };
 
-initDB().catch(err => {
+await initDB().catch(err => {
     console.error('Error executing initDB:', err);
 });
 export default dbPool;
