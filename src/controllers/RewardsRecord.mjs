@@ -7,6 +7,7 @@ export const createRewardRecord = async (req, res) => {
         const user = await User.findById(userID);
         const points = user.pointsCount;
         const rewardType = user.membershipType;
+        const userID = user.userID;
         const newRewardsRecord = await RewardsRecord.create({date, loyaltyProgramID, userID, points, rewardType, status, purpose});
         res.status(201).json(newRewardsRecord);
     } catch (error) {
