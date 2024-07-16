@@ -45,6 +45,13 @@ const initDB = async () => {
             enrollmentLink VARCHAR(255)
         );
     `;
+    const createLoyaltyProgramImageTableQuery = `
+        CREATE TABLE IF NOT EXISTS LoyaltyProgramImage (
+            LoyaltyProgramID BINARY(16) NOT NULL,
+            image_data BLOB NOT NULL,
+            FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId)
+        );
+    `;
 
     const createRewardsRecordTableQuery = `
         CREATE TABLE IF NOT EXISTS RewardsRecord (
@@ -66,7 +73,6 @@ const initDB = async () => {
             UserID BINARY(16) NOT NULL,
             LoyaltyProgramID BINARY(16) NOT NULL,
             MembershipID VARCHAR(255) NOT NULL,
-            rewardType VARCHAR(255),
             Date DATETIME NOT NULL,
             FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId),
             FOREIGN KEY (UserID) REFERENCES User(userID)
@@ -120,6 +126,7 @@ const initDB = async () => {
     try {
         await dbPool.query(createUserTableQuery);
         await dbPool.query(createLoyaltyProgramTableQuery);
+        await dbPool.query(createLoyaltyProgramImageTableQuery);
         await dbPool.query(createRewardsRecordTableQuery);
         await dbPool.query(createVerifiedLoyaltyIDTableQuery);
         await dbPool.query(createUserViewQuery);
