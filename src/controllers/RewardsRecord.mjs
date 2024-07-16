@@ -2,13 +2,14 @@ import RewardsRecord from "../models/RewardsRecord.mjs";
 import User from "../models/User.mjs";
 
 export const createRewardRecord = async (req, res) => {
-    const { date, loyaltyProgramID, userID, points, rewardType, status, purpose } = req.body;
+    const { date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose } = req.body;
     try {
         const user = await User.findById(userID);
         const points = user.pointsCount;
+        const rewardAmount = points;
         const rewardType = user.membershipType;
         const userID = user.userID;
-        const newRewardsRecord = await RewardsRecord.create({date, loyaltyProgramID, userID, points, rewardType, status, purpose});
+        const newRewardsRecord = await RewardsRecord.create({date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose});
         res.status(201).json(newRewardsRecord);
     } catch (error) {
         console.error('Error creating rewards record:', error);

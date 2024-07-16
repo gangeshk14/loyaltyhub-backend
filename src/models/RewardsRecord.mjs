@@ -16,7 +16,7 @@ class RewardsRecord{
     }
 
     //Create record
-    static async create({userID, loyaltyProgramID, date, points, rewardType, status, purpose}) {
+    static async create({userID, loyaltyProgramID, date, points, rewardType, rewardAmount, status, purpose}) {
 
         if (!(await User.findById(userID))) {
             throw new Error("User does not exist");
@@ -27,14 +27,14 @@ class RewardsRecord{
         }
 
         const query = `
-            INSERT INTO RewardsRecord (date, loyaltyProgramID, userID, points, rewardType, status, purpose)
+            INSERT INTO RewardsRecord (date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose)
             VALUES (?, UUID_TOBIN(?), UUID_TO_BIN(?), ?, ?, ?, ?)
         `;
-        const values = [date, loyaltyProgramID, userID, points, rewardType, status, purpose];
+        const values = [date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose];
         try {
             const [result] = await dbPool.query(query, values);
             const recordID = result.insertId;
-            return new RewardsRecord({recordID, date, loyaltyProgramID, userID, points, rewardType, status, purpose});
+            return new RewardsRecord({recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose});
         } catch (err) {
             console.error('Error creating rewards record:', err);
             throw err;
@@ -100,8 +100,6 @@ class RewardsRecord{
             throw err
         }
     }
-
-    // method here to update reward amount based on info from loyalty program? requires handback file processing
 
 
 
