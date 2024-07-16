@@ -18,7 +18,7 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production' // Use secure cookies in production
     }
 }));
-const PORT = 8000
+const PORT = process.env.PORT
 app.use(router);
 process.on('SIGINT', async () => {
     console.log('Closing database connection');
