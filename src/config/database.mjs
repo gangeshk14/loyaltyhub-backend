@@ -37,6 +37,8 @@ const initDB = async () => {
             programId BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
             name VARCHAR(255) NOT NULL,
             description TEXT,
+            category ENUM('TRAVEL'),
+            subCategory ENUM('HOTEL','AIRLINE'),
             currencyName VARCHAR(255),
             currencyRate FLOAT NOT NULL,
             company VARCHAR(255),
@@ -55,6 +57,17 @@ const initDB = async () => {
             rewardAmount INT,
             Status ENUM('SUBMITTED','PROCESSING', 'SUCCESSFUL', 'REJECTED') NOT NULL DEFAULT 'SUBMITTED',
             Purpose VARCHAR(255),
+            FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId),
+            FOREIGN KEY (UserID) REFERENCES User(userID)
+        );
+    `;
+    const createVerifiedLoyaltyIDTableQuery = `
+        CREATE TABLE IF NOT EXISTS VerifiedLoyaltyID (
+            UserID BINARY(16) NOT NULL,
+            LoyaltyProgramID BINARY(16) NOT NULL,
+            MembershipID VARCHAR(255) NOT NULL,
+            rewardType VARCHAR(255),
+            Date DATETIME NOT NULL,
             FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId),
             FOREIGN KEY (UserID) REFERENCES User(userID)
         );
@@ -108,6 +121,7 @@ const initDB = async () => {
         await dbPool.query(createUserTableQuery);
         await dbPool.query(createLoyaltyProgramTableQuery);
         await dbPool.query(createRewardsRecordTableQuery);
+        await dbPool.query(createVerifiedLoyaltyIDTableQuery);
         await dbPool.query(createUserViewQuery);
         console.log('Database initialized');
     } catch (err) {
