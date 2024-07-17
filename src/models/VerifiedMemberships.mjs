@@ -39,5 +39,19 @@ class verifiedMemberships {
         }
     }
 
+    static async findByMembershipID(membershipID) {
+        const query = `
+        SELECT * FROM VerifiedLoyaltyID WHERE membershipID = ?
+        `;
+        const values = [membershipID];
+        try {
+            const [rows] = await dbPool.query(query, values);
+            return rows.map(row => new verifiedMemberships(row));
+        } catch (err) {
+            console.error('Error finding by membershipID:', err);
+            throw err;
+        }
+    }
+
 
 }

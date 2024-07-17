@@ -2,8 +2,14 @@ import verifiedMemberships from "../models/VerifiedMemberships.mjs";
 import User from "../models/User.mjs";
 
 export const addVerifiedMembership = async (req, res) => {
-    const { userID, loyaltyProgramID, membershipID, date } = req.body;
+    const {
+        loyaltyProgramID, //also requires update
+        membershipID
+    } = req.body;
     try {
+        const user = req.user;
+        const userID = user.userID;
+        const date = new Date();
         const membership = await verifiedMemberships.create({userID, loyaltyProgramID, membershipID, date});
         res.status(201).json(membership);
     } catch (error) {
@@ -14,8 +20,8 @@ export const addVerifiedMembership = async (req, res) => {
 
 export const getVerifiedMembershipByUser = async (req, res) => {
     const { userID } = req.params;
-    const user = await User.findById(userID);
     try {
+        const user = await User.findById(userID);
         const membership = await verifiedMemberships.findByUserID(userID);
         if (!membership) {
             return res.status(404).json({error: 'Record not found'});
