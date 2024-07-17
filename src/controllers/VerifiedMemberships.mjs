@@ -1,4 +1,4 @@
-import verifiedMemberships from "../models/verifiedMemberships.mjs";
+import verifiedMemberships from "../models/VerifiedMemberships.mjs";
 import User from "../models/User.mjs";
 
 export const addVerifiedMembership = async (req, res) => {

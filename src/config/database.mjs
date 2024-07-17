@@ -50,6 +50,8 @@ const initDB = async () => {
             LoyaltyProgramID BINARY(16) NOT NULL,
             image_data BLOB NOT NULL,
             FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
         );
     `;
 
@@ -123,6 +125,25 @@ const initDB = async () => {
         LEFT JOIN RewardsRecord RR ON U.userID = RR.UserID
         GROUP BY U.userID;
     `;
+    const createLoyaltyProgramViewQuery = `
+    CREATE OR REPLACE VIEW LoyaltyProgramView AS
+    SELECT
+        LP.name,
+        LP.description,
+        LP.category,
+        LP.subCategory,
+        LP.currencyName,
+        LP.currencyRate,
+        LP.company,
+        LP.enrollmentLink,
+        LPI.image_data
+    FROM 
+        LoyaltyProgram LP
+    LEFT JOIN 
+        LoyaltyProgramImage LPI
+    ON 
+        LP.programId = LPI.LoyaltyProgramID
+    `;
     try {
         await dbPool.query(createUserTableQuery);
         await dbPool.query(createLoyaltyProgramTableQuery);
@@ -130,6 +151,7 @@ const initDB = async () => {
         await dbPool.query(createRewardsRecordTableQuery);
         await dbPool.query(createVerifiedLoyaltyIDTableQuery);
         await dbPool.query(createUserViewQuery);
+        await dbPool.query(createLoyaltyProgramViewQuery);
         console.log('Database initialized');
     } catch (err) {
         console.error('Error initializing database:', err);
