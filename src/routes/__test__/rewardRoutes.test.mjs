@@ -4,6 +4,7 @@ import app from '../../app.mjs'
 describe ('RewardsRecord Requests', () => {
     let token;
     let recordID;
+    let userID;
 
     beforeAll(async () => {
         const response = await request(app).post('/api/login').send({
@@ -11,13 +12,17 @@ describe ('RewardsRecord Requests', () => {
             password: 'P@ssword123',
         });
         token = response.body.token;
+
+        const userDetails = request(app).get('/profile');
+        userID = response.body.userID;
     });
 
     describe ('POST /rewardsrecords', () => {
         it('should create new reward record', async () => {
             const response = await request(app).post('/rewardsrecords').set('Authorisation', `Bearer ${token}`).send({
-                date: new Date(),
-                loyaltyProgramID: 'lp123',
+                loyaltyProgramID: 'lp123', // requires update
+                points: 100,
+                status: 'REJECTED',
                 purpose: 'test purpose'
             })
                 // .expect(201);
@@ -43,7 +48,7 @@ describe ('RewardsRecord Requests', () => {
     describe ('PUT /rewardsrecords/:recordID/status', () => {
         it('should update reward record status', async () => {
             const response = await request(app).put(`/rewardsrecords/${recordID}/status`).set('Authorisation', `Bearer ${token}`).send({
-                status: 'REJECTED'
+                status: 'SUCCESSFUL'
             })
             // .expect(response.status).toBe(200)
             // .expect(response.body).toHaveProperty('status', 'REJECTED')
