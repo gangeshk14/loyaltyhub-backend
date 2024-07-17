@@ -2,14 +2,29 @@ import RewardsRecord from "../models/RewardsRecord.mjs";
 import User from "../models/User.mjs";
 
 export const createRewardRecord = async (req, res) => {
-    const { date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose } = req.body;
+    const {
+        loyaltyProgramID, // remove after model update
+        points,
+        status,
+        purpose
+    } = req.body;
     try {
-        const user = await User.findById(userID);
-        const points = user.pointsCount;
-        const rewardAmount = points;
+        const user = req.user;
+        const rewardAmount = points; //this will have to be updated with currencyRate from loyalty programs model
+        // also require getting loyalty program id from model
         const rewardType = user.membershipType;
         const userID = user.userID;
-        const newRewardsRecord = await RewardsRecord.create({date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose});
+        const date = new Date();
+        const newRewardsRecord = await RewardsRecord.create({
+            date,
+            loyaltyProgramID,
+            userID,
+            points,
+            rewardType,
+            rewardAmount,
+            status,
+            purpose
+        });
         res.status(201).json(newRewardsRecord);
     } catch (error) {
         console.error('Error creating rewards record:', error);
