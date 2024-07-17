@@ -1,5 +1,5 @@
 import request from 'supertest'
-import app from '../app.mjs'
+import app from '../../app.mjs'
 
 describe ('RewardsRecord Requests', () => {
     let token;
