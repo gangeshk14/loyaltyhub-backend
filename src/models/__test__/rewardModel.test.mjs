@@ -1,6 +1,7 @@
 import RewardsRecord from '../RewardsRecord.mjs';
 import dbPool from '../../config/database.mjs';
 import User from '../User.mjs';
+import { jest } from '@jest/globals';
 
 jest.mock('../../config/database.mjs');
 jest.mock('../User.mjs');
