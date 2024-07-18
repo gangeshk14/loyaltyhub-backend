@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import User from '../models/User.mjs';
 
 const generateToken = (user) => {
-    return jwt.sign({ userID: user.userID, userName:user.userName, email: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+    return jwt.sign({ userID: user.userID, userName: user.userName, email: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 };
 
 export const registerUser = async (req, res) => {
@@ -70,7 +70,7 @@ export const getUsers = async (req, res) => {
         const users = await User.getAllUser();
 
         if (!users) {
-            return res.status(404).json({message: 'Users not found'});
+            return res.status(404).json({ message: 'Users not found' });
         }
         res.json(users.map(user => ({
             userID: user.userID,
@@ -85,6 +85,24 @@ export const getUsers = async (req, res) => {
             userRewardsRequests: user.userRewardsRequests
         })));
     } catch (err) {
-        res.status(500).json({message: 'Error fetching users', error: err.message});
+        res.status(500).json({ message: 'Error fetching users', error: err.message });
+    }
+};
+
+export const updateProfile = async (req, res) => {
+    const { userId } = req.params;
+    const { userName, mobileNumber, email } = req.body;
+    try {
+        console.log(1111)
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(400).json({ error: 'Fail to identify user by userID' });
+        }
+        await User.update(userId, userName, mobileNumber, email);
+        console.log('Updated user data:', { userName, mobileNumber, email });
+        console.log('Function end');
+    } catch (error) {
+        console.error('Update error:', error);
+        res.status(500).json({ error: 'Update failed' });
     }
 };

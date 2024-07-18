@@ -32,6 +32,32 @@ class User {
             throw err;
         }
     }
+
+    //update user
+    static async update(userId, userName, mobileNumber, email) {
+        const query = `
+            UPDATE User
+            SET userName = ?, mobileNumber = ?, email = ?
+            WHERE userID = UUID_TO_BIN(?)
+        `;
+        const values = [userName, mobileNumber, email, userId];
+        
+        try {
+            const [result] = await dbPool.query(query, values);
+            
+            if (result.affectedRows === 0) {
+                throw new Error('No user found with the given userID');
+            }
+            
+            return { userId, userName, mobileNumber, email }; 
+        } catch (err) {
+            console.error('Error updating user:', err);
+            throw err;
+        }
+        
+    }
+    
+    
     //verify password
     static async verifyPassword(password, hashedPassword) {
         try {
