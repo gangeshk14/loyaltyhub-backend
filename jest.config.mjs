@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+
 dotenv.config({ path: ".env.test" })
 export default {
     moduleFileExtensions: [
@@ -7,5 +8,7 @@ export default {
         "js",
     ],
     testRegex: `test\.mjs$`,
-    setupFiles: ["dotenv/config"]
+    setupFiles: ["dotenv/config"],
+    "transform": {},
+    testEnvironment: 'jest-environment-node'
 };

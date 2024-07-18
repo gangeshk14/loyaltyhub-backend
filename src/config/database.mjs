@@ -128,6 +128,7 @@ const initDB = async () => {
     const createLoyaltyProgramViewQuery = `
     CREATE OR REPLACE VIEW LoyaltyProgramView AS
     SELECT
+        LP.programId,
         LP.name,
         LP.description,
         LP.category,

@@ -31,6 +31,46 @@ class LoyaltyProgram {
       throw err;
     }
   }
+  static async getLoyaltyProgramById(programId) {
+    const query = `
+      SELECT 
+        *
+      FROM
+        LoyaltyProgramView
+      WHERE
+        programId = UUID_TO_BIN(?)
+      `;
+    try {
+      const [rows] = await dbPool.query(query, [programId]);
+      if (rows.length === 0) {
+        return null;
+      }
+      return new LoyaltyProgram(rows[0]);
+    } catch (err) {
+      console.error(`Error finding Loyalty Program with ID ${programId}`, err);
+      throw err;
+    }
+  }
 
+  static async getLoyaltyProgramByName(name) {
+    const query = `
+      SELECT 
+        *
+      FROM
+        LoyaltyProgramView
+      WHERE
+        name = ?
+      `;
+    try {
+      const [rows] = await dbPool.query(query, [name]);
+      if (rows.length === 0) {
+        return null;
+      }
+      return new LoyaltyProgram(rows[0]);
+    } catch (err) {
+      console.error(`Error finding Loyalty Program with name ${name}`, err);
+      throw err;
+    }
+  }
 }
 export default LoyaltyProgram

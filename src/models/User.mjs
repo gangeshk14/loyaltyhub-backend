@@ -20,12 +20,14 @@ class User {
         const hashedPassword = await argon2.hash(password);
         const query = `
             INSERT INTO User (userName, password, firstName, lastName, membershipType, mobileNumber, email, pointsCount)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 0);
         `;
         const values = [userName, hashedPassword, firstName, lastName, membershipType, mobileNumber, email];
         try {
             const [result] = await dbPool.query(query, values);
-            const userID = result.insertId; // Get the newly inserted userID
+            const selectQuery = `SELECT BIN_TO_UUID(userID) AS userID FROM User WHERE userName = ?`;
+            const [userResult] = await dbPool.query(selectQuery, [userName]);
+            const userID = userResult[0].userID;
             return new User({ userID, userName, firstName, lastName, membershipType, mobileNumber, email, pointsCount: 0 });
         } catch (err) {
             console.error('Error creating user:', err);
@@ -47,7 +49,6 @@ class User {
             SELECT 
                 BIN_TO_UUID(userID) AS userID,
                 userName,
-                password,
                 firstName,
                 lastName,
                 membershipType,
@@ -59,7 +60,7 @@ class User {
             FROM UserView
         `;
         try {
-            const [rows] = await pool.query(query);
+            const [rows] = await dbPool.query(query);
             return rows.map(row => new User(row));
         } catch (err) {
             console.error('Error finding all users:', err);
@@ -132,7 +133,6 @@ class User {
             SELECT 
                 BIN_TO_UUID(userID) AS userID,
                 userName,
-                password,
                 firstName,
                 lastName,
                 membershipType,
