@@ -15,6 +15,7 @@ export const createRewardRecord = async (req, res) => {
         const rewardType = user.membershipType;
         const userID = user.userID;
         const date = new Date();
+        const status = "SUBMITTED";
         const newRewardsRecord = await RewardsRecord.create({
             date,
             loyaltyProgramID,

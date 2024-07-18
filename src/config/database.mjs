@@ -65,7 +65,7 @@ const initDB = async () => {
             rewardType VARCHAR(255),
             rewardAmount INT,
             Status ENUM('SUBMITTED','PROCESSING', 'SUCCESSFUL', 'REJECTED') NOT NULL DEFAULT 'SUBMITTED',
-            Purpose VARCHAR(255),
+            Purpose VARCHAR(255) NULL,
             FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId),
             FOREIGN KEY (UserID) REFERENCES User(userID)
         );
