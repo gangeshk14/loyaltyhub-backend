@@ -98,9 +98,10 @@ export const updateProfile = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: 'Fail to identify user by userID' });
         }
-        await User.update(userId, userName, mobileNumber, email);
+        const result = await User.update(userId, userName, mobileNumber, email);
         console.log('Updated user data:', { userName, mobileNumber, email });
         console.log('Function end');
+        res.status(200).json(result);
     } catch (error) {
         console.error('Update error:', error);
         res.status(500).json({ error: 'Update failed' });
