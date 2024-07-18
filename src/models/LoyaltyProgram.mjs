@@ -3,20 +3,16 @@ import dbPool from '../config/database.mjs';
 class LoyaltyProgram {
   constructor(loyaltyProgram) {
     this.name = loyaltyProgram.name;
-    this.description = loyaltyProgram.description;
-    this.category = loyaltyProgram.category;
-    this.subcategory = loyaltyProgram.subcategory;
-    this.currencyName = loyaltyProgram.currencyName;
-    this.currencyRate = loyaltyProgram.currencyRate;
-    this.company = loyaltyProgram.company;
-    this.enrollmentLink = loyaltyProgram.enrollmentLink;
     this.image_data = loyaltyProgram.image_data;
-}
+    this.currencyRate = loyaltyProgram.currencyRate;
+  }
 
   static async getAllLoyaltyPrograms() {
     const query = `
       SELECT 
-        *
+        name,
+        image_data,
+        currencyRate
       FROM
         LoyaltyProgramView
       `;
@@ -31,6 +27,6 @@ class LoyaltyProgram {
       throw err;
     }
   }
-
 }
-export default LoyaltyProgram
+
+export default LoyaltyProgram;

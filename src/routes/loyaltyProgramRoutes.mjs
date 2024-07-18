@@ -3,6 +3,6 @@ import { fetchLoyaltyPrograms } from '../controllers/LoyaltyProgram.mjs';
 
 const router = express.Router();
 
-router.get('/loyaltyprograms', fetchLoyaltyPrograms);
+router.get('/loyalty-programs', fetchLoyaltyPrograms);
 
 export default router;
