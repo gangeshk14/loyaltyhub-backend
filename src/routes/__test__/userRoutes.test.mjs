@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app from '../../app.mjs'; // Assuming your Express app instance is exported from 'app.js'
-import dbPool from '../../config/database.mjs'; // Import your database connection
+import app from '../../app.mjs';
+import dbPool from '../../config/database.mjs';
 
 describe('User Routes', () => {
     test('GET /api/users should call getUsers', async () => {

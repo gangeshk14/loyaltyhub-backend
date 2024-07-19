@@ -20,21 +20,50 @@ class User {
         const hashedPassword = await argon2.hash(password);
         const query = `
             INSERT INTO User (userName, password, firstName, lastName, membershipType, mobileNumber, email, pointsCount)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 0);
         `;
         const values = [userName, hashedPassword, firstName, lastName, membershipType, mobileNumber, email];
         try {
             const [result] = await dbPool.query(query, values);
-            const userID = result.insertId; // Get the newly inserted userID
+            const selectQuery = `SELECT BIN_TO_UUID(userID) AS userID FROM User WHERE userName = ?`;
+            const [userResult] = await dbPool.query(selectQuery, [userName]);
+            const userID = userResult[0].userID;
             return new User({ userID, userName, firstName, lastName, membershipType, mobileNumber, email, pointsCount: 0 });
         } catch (err) {
             console.error('Error creating user:', err);
             throw err;
         }
     }
+
+    //update user
+    static async update(userId, userName, mobileNumber, email) {
+        const query = `
+            UPDATE User
+            SET userName = ?, mobileNumber = ?, email = ?
+            WHERE userID = UUID_TO_BIN(?)
+        `;
+        const values = [userName, mobileNumber, email, userId];
+        
+        try {
+            const [result] = await dbPool.query(query, values);
+            
+            if (result.affectedRows === 0) {
+                throw new Error('No user found with the given userID');
+            }
+            
+            return { userId, userName, mobileNumber, email }; 
+        } catch (err) {
+            console.error('Error updating user:', err);
+            throw err;
+        }
+        
+    }
+    
+    
     //verify password
     static async verifyPassword(password, hashedPassword) {
         try {
+            console.log(hashedPassword);
             return await argon2.verify(hashedPassword, password);
         } catch (err) {
             console.error('Error verifying password:', err);
@@ -47,7 +76,6 @@ class User {
             SELECT 
                 BIN_TO_UUID(userID) AS userID,
                 userName,
-                password,
                 firstName,
                 lastName,
                 membershipType,
@@ -59,7 +87,7 @@ class User {
             FROM UserView
         `;
         try {
-            const [rows] = await pool.query(query);
+            const [rows] = await dbPool.query(query);
             return rows.map(row => new User(row));
         } catch (err) {
             console.error('Error finding all users:', err);
@@ -132,8 +160,8 @@ class User {
             SELECT 
                 BIN_TO_UUID(userID) AS userID,
                 userName,
-                password,
                 firstName,
+                password,
                 lastName,
                 membershipType,
                 mobileNumber,

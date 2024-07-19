@@ -21,7 +21,7 @@ const initDB = async () => {
     const createUserTableQuery = `
         CREATE TABLE IF NOT EXISTS User (
             userID BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
-            userName VARCHAR(255) NOT NULL,
+            userName VARCHAR(255) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL,
             firstName VARCHAR(255) NOT NULL,
             lastName VARCHAR(255) NOT NULL,
@@ -128,6 +128,7 @@ const initDB = async () => {
     const createLoyaltyProgramViewQuery = `
     CREATE OR REPLACE VIEW LoyaltyProgramView AS
     SELECT
+        LP.programId,
         LP.name,
         LP.description,
         LP.category,
