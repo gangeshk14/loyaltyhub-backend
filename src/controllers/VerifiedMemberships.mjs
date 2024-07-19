@@ -11,6 +11,8 @@ export const addVerifiedMembership = async (req, res) => {
         const user = req.user;
         const userID = user.userID;
         const date = new Date();
+        const firstName = user.firstName;
+        const lastName = user.lastName;
 
         const [existingMembership] = await dbPool.query('SELECT * FROM VerifiedLoyaltyID WHERE membershipID = ?', [membershipID]);
         if (existingMembership.length > 0) {
@@ -20,7 +22,7 @@ export const addVerifiedMembership = async (req, res) => {
             })
         }
 
-        const membership = await verifiedMemberships.create({userID, loyaltyProgramID, membershipID, date});
+        const membership = await verifiedMemberships.create({userID, loyaltyProgramID, membershipID, date, firstName, lastName});
         res.status(201).json(membership);
     } catch (error) {
         console.error('Error adding verified membership:', error);

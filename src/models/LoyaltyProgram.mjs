@@ -2,6 +2,7 @@ import dbPool from '../config/database.mjs';
 
 class LoyaltyProgram {
   constructor(loyaltyProgram) {
+    this.programID = loyaltyProgram.programID;
     this.name = loyaltyProgram.name;
     this.description = loyaltyProgram.description;
     this.category = loyaltyProgram.category;

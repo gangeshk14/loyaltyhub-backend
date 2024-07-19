@@ -5,7 +5,6 @@ export const createRewardRecord = async (req, res) => {
     const {
         loyaltyProgramID, // remove after model update
         points,
-        status,
         purpose
     } = req.body;
     try {
