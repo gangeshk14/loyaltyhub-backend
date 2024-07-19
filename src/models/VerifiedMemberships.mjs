@@ -7,18 +7,27 @@ class verifiedMemberships {
         this.loyaltyProgramID = verifiedMemberships.loyaltyProgramID;
         this.membershipID = verifiedMemberships.membershipID;
         this.date = verifiedMemberships.date;
+        this.firstName = verifiedMemberships.firstName;
+        this.lastName = verifiedMemberships.lastName;
     }
 
-    static async create({userID, loyaltyProgramID, membershipID, date }) {
+    static async create({userID, loyaltyProgramID, membershipID, date, firstName, lastName }) {
+        // const userQuery = `
+        // SELECT firstName, lastName FROM User WHERE userID = UUID_TO_BIN(?);
+        // `
+        // const [userResult] = await dbPool.query(userQuery, [userID]);
+        // const firstName = userResult[0].firstName;
+        // const lastName = userResult[0].lastName;
+
         const query = `
-        INSERT INTO VerifiedLoyaltyID (userID, loyaltyProgramID, membershipID, date) 
-        VALUES (UUID_TOBIN(?), UUID_TOBIN(?), ?, ?)
+        INSERT INTO VerifiedLoyaltyID (userID, loyaltyProgramID, membershipID, date, firstName, lastName) 
+        VALUES (UUID_TOBIN(?), UUID_TOBIN(?), ?, ?, ?, ?)
         `;
-        const values = [userID, loyaltyProgramID, membershipID, date];
+        const values = [userID, loyaltyProgramID, membershipID, date, firstName, lastName];
         try {
             const [result] = await dbPool.query(query, values);
             const id = result.insertId;
-            return new verifiedMemberships({id, userID, loyaltyProgramID, membershipID, date});
+            return new verifiedMemberships({id, userID, loyaltyProgramID, membershipID, date, firstName, lastName});
         } catch (err) {
             console.error('Error:', err);
             throw err;
