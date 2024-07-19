@@ -25,6 +25,7 @@ export const loginUser = async (req, res) => {
     const { userName, password } = req.body;
     try {
         const user = await User.findByUserName(userName);
+        console.log(user)
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
