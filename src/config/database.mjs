@@ -80,6 +80,15 @@ const initDB = async () => {
             FOREIGN KEY (UserID) REFERENCES User(userID)
         );
     `;
+    const createLoyaltyLoginTableQuery = `
+        CREATE TABLE IF NOT EXISTS LoyaltyLoginDetails (
+            LoyaltyProgramID BINARY(16) NOT NULL,
+            MembershipID VARCHAR(255) NOT NULL,
+            firstName VARCHAR(255) NOT NULL,
+            lastName VARCHAR(255) NOT NULL,
+            FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId)
+        );
+    `;
 
     const createUserViewQuery = `
         CREATE OR REPLACE VIEW UserView AS
@@ -153,6 +162,7 @@ const initDB = async () => {
         await dbPool.query(createVerifiedLoyaltyIDTableQuery);
         await dbPool.query(createUserViewQuery);
         await dbPool.query(createLoyaltyProgramViewQuery);
+        await dbPool.query(createLoyaltyLoginTableQuery);
         console.log('Database initialized');
     } catch (err) {
         console.error('Error initializing database:', err);
