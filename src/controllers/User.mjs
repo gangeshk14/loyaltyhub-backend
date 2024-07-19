@@ -6,6 +6,10 @@ const generateToken = (user) => {
     return jwt.sign({ userID: user.userID, userName: user.userName, email: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 };
 
+export const verifyToken = async (req, res) => {
+    return res.status(200).json({})
+}
+
 export const registerUser = async (req, res) => {
     const { userName, password, firstName, lastName, email, membershipType, mobileNumber } = req.body;
     try {
@@ -14,10 +18,10 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ error: 'User already exists' });
         }
         const userId = await User.create({ userName, password, firstName, lastName, membershipType, mobileNumber, email });
-        res.status(201).json({ userId });
+        return res.status(201).json({ userId });
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).json({ error: 'Registration failed' });
+        return res.status(500).json({ error: 'Registration failed' });
     }
 };
 
