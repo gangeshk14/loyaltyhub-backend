@@ -82,7 +82,7 @@ class RewardsRecord {
                 rewardAmount,
                 status,
                 purpose
-            FROM RewardsRecord WHERE BIN_TO_UUID(userID) = ?
+            FROM RewardsRecord WHERE userID = UUID_TO_BIN(?)
         `;
         const values = [userID];
         try {
