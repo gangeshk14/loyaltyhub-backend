@@ -76,6 +76,8 @@ const initDB = async () => {
             LoyaltyProgramID BINARY(16) NOT NULL,
             MembershipID VARCHAR(255) NOT NULL,
             Date DATETIME NOT NULL,
+            firstName VARCHAR(255) NOT NULL,
+            lastName VARCHAR(255) NOT NULL,
             FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId),
             FOREIGN KEY (UserID) REFERENCES User(userID)
         );
