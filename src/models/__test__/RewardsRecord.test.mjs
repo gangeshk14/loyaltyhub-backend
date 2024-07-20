@@ -1,15 +1,7 @@
 import dbPool from "../../config/database.mjs";
 import RewardsRecord from "../RewardsRecord.mjs";
 import User from "../User.mjs";
-import LoyaltyProgram from "../LoyaltyProgram.mjs";
 
-async function getUserId(username) {
-  const getUserIdQuery = `
-SELECT BIN_TO_UUID(userid) AS userID FROM user WHERE userName = ?
-`;
-  const [resultUserId] = await dbPool.query(getUserIdQuery, [username]);
-  return resultUserId[0].userID;
-}
 async function getProgramId(loyaltyProgramName) {
   const getProgramIdQuery = `
 SELECT BIN_TO_UUID(programID) AS programID FROM loyaltyprogram WHERE name = ?
@@ -91,15 +83,14 @@ describe('Rewards Record', () => {
       points: 0,
       rewardType: 'testreward',
       rewardAmount: 5000,
-      status: 'SUCCESSFUL',
+      status: 'PROCESSING',
       purpose: 'testReward',
     }
     testRewardModel = await RewardsRecord.create(rewardsRecordData);
   });
   afterAll(async () => {
-    await dbPool.query(` DELETE FROM rewardsrecord`);
-    await dbPool.query(` DELETE FROM loyaltyprogram`);
-    await dbPool.query(` DELETE FROM user`);
+    await dbPool.query(`DROP DATABASE lhdbtest`);
+    await dbPool.query(`CREATE DATABASE lhdbtest`);
     await dbPool.end();
   });
 
@@ -132,5 +123,11 @@ describe('Rewards Record', () => {
     const foundRecordbyLoyaltyProgramId = await RewardsRecord.findByLoyaltyProgramID(testRewardModel.loyaltyProgramID);
     expect(foundRecordbyLoyaltyProgramId).toBeInstanceOf(RewardsRecord);
     expect({ ...foundRecordbyLoyaltyProgramId, date: null }).toEqual({ ...testRewardModel, date: null });
+  });
+  test('should update rewardsRecord Status', async () => {
+    const isUpdatedRecordStatus = await RewardsRecord.updateStatus(testRewardModel.recordID, 'SUCCESSFUL');
+    const updatedRecord = await RewardsRecord.findById(testRewardModel.recordID);
+    expect(isUpdatedRecordStatus).toBe(true);
+    expect(updatedRecord.status).toEqual('SUCCESSFUL');
   });
 });
