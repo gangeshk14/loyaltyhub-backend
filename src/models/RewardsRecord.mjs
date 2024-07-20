@@ -1,7 +1,6 @@
-import { UUIDV1 } from "sequelize";
 import dbPool from "../config/database.mjs";
 import User from "./User.mjs";
-import crypto from 'crypto';
+import crypto from "crypto";
 
 
 class RewardsRecord {
@@ -32,10 +31,11 @@ class RewardsRecord {
         const query = `
             INSERT INTO RewardsRecord (recordID, Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Status, Purpose)
             VALUES (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?, ?)
-       `;
+        `;
         const values = [recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose];
         try {
             await dbPool.query(query, values);
+            // Retrieve the newly inserted record
             return new RewardsRecord({ recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose });
         } catch (err) {
             console.error('Error creating rewards record:', err);
@@ -45,7 +45,17 @@ class RewardsRecord {
 
     static async findById(recordID) {
         const query = `
-            SELECT * FROM RewardsRecord WHERE recordID = ?
+            SELECT 
+                BIN_TO_UUID(recordID) as recordID,
+                date, 
+                BIN_TO_UUID(loyaltyProgramID) as loyaltyProgramID,
+                BIN_TO_UUID(userID) as userID,
+                points,
+                rewardType,
+                rewardAmount,
+                status,
+                purpose
+            FROM RewardsRecord WHERE BIN_TO_UUID(recordID) = ?
         `;
         const values = [recordID];
         try {
