@@ -17,6 +17,7 @@ describe('Loyalty Program ', () => {
     beforeAll(async () => {
         loyaltyProgramData = {
             name: 'Test Program',
+            code:'TC',
             description: 'Description',
             category: 'TRAVEL',
             subcategory: 'HOTEL',
@@ -27,6 +28,7 @@ describe('Loyalty Program ', () => {
         };
         const loyaltyProgramValues = [
             loyaltyProgramData.name,
+            loyaltyProgramData.code,
             loyaltyProgramData.description,
             loyaltyProgramData.category,
             loyaltyProgramData.subcategory,
@@ -36,8 +38,8 @@ describe('Loyalty Program ', () => {
             loyaltyProgramData.enrollmentLink,
         ];
         const insertProgramQuery = `
-            INSERT INTO LoyaltyProgram (name, description, category, subCategory, currencyName, currencyRate, company, enrollmentLink)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO LoyaltyProgram (name,code, description, category, subCategory, currencyName, currencyRate, company, enrollmentLink)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const resultProgram = await dbPool.query(insertProgramQuery, loyaltyProgramValues);
         const getProgramIdQuery = `

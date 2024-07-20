@@ -4,6 +4,7 @@ class LoyaltyProgram {
   constructor(loyaltyProgram) {
     this.programID = loyaltyProgram.programID;
     this.name = loyaltyProgram.name;
+    this.code = loyaltyProgram.code;
     this.description = loyaltyProgram.description;
     this.category = loyaltyProgram.category;
     this.subcategory = loyaltyProgram.subcategory;

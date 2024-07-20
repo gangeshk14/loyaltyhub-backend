@@ -48,6 +48,7 @@ describe('Rewards Record', () => {
     testLoyaltyPrograms = {
       Program1: await dbPool.query(`INSERT INTO loyaltyprogram (
         name,
+        code,
         description,
         category,
         subCategory,
@@ -58,6 +59,7 @@ describe('Rewards Record', () => {
     ) VALUES
     (
       'Test Program Name 1',
+      'TE',
       'This is a test description for the first loyalty program.',
       'TRAVEL',
       'HOTEL',
@@ -68,6 +70,7 @@ describe('Rewards Record', () => {
     );`),
       Program2: await dbPool.query(`INSERT INTO loyaltyprogram (
         name,
+        code,
         description,
         category,
         subCategory,
@@ -78,6 +81,7 @@ describe('Rewards Record', () => {
     ) VALUES
     (
       'Test Program Name 2',
+      'TE',
       'This is a test description for the second loyalty program.',
       'TRAVEL',
       'AIRLINE',
