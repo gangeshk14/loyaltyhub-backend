@@ -118,23 +118,23 @@ describe('Rewards Record', () => {
       purpose: 'testPurposes2'
     });
     expect(expected?.recordID).not.toBeNull();
-    const actual = await RewardsRecord.findByUserID(expected.userID);
+    const [actual] = await RewardsRecord.findByUserID(expected.userID);
     expect({ ...actual, recordID: undefined }).toEqual(expected);
   });
 
   test('should find record by id', async () => {
-    const foundRecordbyUserId = await RewardsRecord.findById(testRewardModel.recordID);
-    expect(foundRecordbyUserId).toBeInstanceOf(RewardsRecord);
-    expect(foundRecordbyUserId).toEqual(testRewardModel);
+    const record = await RewardsRecord.findById(testRewardModel.recordID);
+    expect(record).toBeInstanceOf(RewardsRecord);
+    expect(record).toEqual(testRewardModel);
   });
 
-  test('should find recordBy userID', async () => {
-    const foundRecordbyUserId = await RewardsRecord.findByUserID(testRewardModel.userID);
+  test('should find records by userID', async () => {
+    const [foundRecordbyUserId] = await RewardsRecord.findByUserID(testRewardModel.userID);
     expect(foundRecordbyUserId).toBeInstanceOf(RewardsRecord);
     expect(foundRecordbyUserId).toEqual(testRewardModel);
   });
-  test('should find recordBy loyaltyProgramID', async () => {
-    const foundRecordbyLoyaltyProgramId = await RewardsRecord.findByLoyaltyProgramID(testRewardModel.loyaltyProgramID);
+  test('should find records by loyaltyProgramID', async () => {
+    const [foundRecordbyLoyaltyProgramId] = await RewardsRecord.findByLoyaltyProgramID(testRewardModel.loyaltyProgramID);
     expect(foundRecordbyLoyaltyProgramId).toBeInstanceOf(RewardsRecord);
     expect(foundRecordbyLoyaltyProgramId).toEqual(testRewardModel);
   });
