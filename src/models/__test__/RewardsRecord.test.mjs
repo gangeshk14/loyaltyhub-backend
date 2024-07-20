@@ -31,6 +31,7 @@ describe('Rewards Record', () => {
     testRewardModel = await RewardsRecord.create(rewardsRecordData);
   });
   afterAll(async () => {
+    await dbPool.query(` DELETE FROM rewardsrecord`);
     await dbPool.end();
   });
 
@@ -49,9 +50,19 @@ describe('Rewards Record', () => {
     const actual = await RewardsRecord.findById(expected.recordID);
     expect({ ...actual, date: null }).toEqual({ ...expected, date: null });
   });
-  test('should find recordByID', async () => {
+  test('should find recordBy recordID', async () => {
     const foundRecordbyId = await RewardsRecord.findById(testRewardModel.recordID);
     expect(foundRecordbyId).toBeInstanceOf(RewardsRecord);
     expect({ ...foundRecordbyId, date: null }).toEqual({ ...testRewardModel, date: null });
+  });
+  test('should find recordBy userID', async () => {
+    const foundRecordbyUserId = await RewardsRecord.findByUserID(testRewardModel.userID);
+    expect(foundRecordbyUserId).toBeInstanceOf(RewardsRecord);
+    expect({ ...foundRecordbyUserId, date: null }).toEqual({ ...testRewardModel, date: null });
+  });
+  test('should find recordBy loyaltyProgramID', async () => {
+    const foundRecordbyLoyaltyProgramId = await RewardsRecord.findByLoyaltyProgramID(testRewardModel.loyaltyProgramID);
+    expect(foundRecordbyLoyaltyProgramId).toBeInstanceOf(RewardsRecord);
+    expect({ ...foundRecordbyLoyaltyProgramId, date: null }).toEqual({ ...testRewardModel, date: null });
   });
 });

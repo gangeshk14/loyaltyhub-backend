@@ -1,7 +1,7 @@
 import dbPool from "../config/database.mjs";
 import User from "./User.mjs";
 import crypto from "crypto";
-
+import LoyaltyProgram from "./LoyaltyProgram.mjs";
 
 class RewardsRecord {
     constructor(rewardsRecord) {
@@ -24,7 +24,7 @@ class RewardsRecord {
             throw new Error("User does not exist");
         }
 
-        if (!(await RewardsRecord.findByLoyaltyProgramID(loyaltyProgramID))) {
+        if (!(await LoyaltyProgram.getLoyaltyProgramById(loyaltyProgramID))) {
             throw new Error("Loyalty Program does not exist");
         }
 
@@ -55,7 +55,7 @@ class RewardsRecord {
                 rewardAmount,
                 status,
                 purpose
-            FROM RewardsRecord WHERE BIN_TO_UUID(recordID) = ?
+            FROM RewardsRecord WHERE recordID = UUID_TO_BIN(?)
         `;
         const values = [recordID];
         try {
@@ -72,12 +72,25 @@ class RewardsRecord {
 
     static async findByUserID(userID) {
         const query = `
-            SELECT * FROM RewardsRecord WHERE userID = ?
+            SELECT 
+                BIN_TO_UUID(recordID) as recordID,
+                date, 
+                BIN_TO_UUID(loyaltyProgramID) as loyaltyProgramID,
+                BIN_TO_UUID(userID) as userID,
+                points,
+                rewardType,
+                rewardAmount,
+                status,
+                purpose
+            FROM RewardsRecord WHERE BIN_TO_UUID(userID) = ?
         `;
         const values = [userID];
         try {
             const [rows] = await dbPool.query(query, values);
-            return rows.map(row => new RewardsRecord(row));
+            if (rows.length === 0) {
+                return null;
+            }
+            return new RewardsRecord(rows[0])
         } catch (err) {
             console.error('Error finding rewards record by user ID:', err);
             throw err;
@@ -86,12 +99,25 @@ class RewardsRecord {
 
     static async findByLoyaltyProgramID(loyaltyProgramID) {
         const query = `
-            SELECT * FROM RewardsRecord WHERE loyaltyProgramID = ?
+            SELECT 
+                BIN_TO_UUID(recordID) as recordID,
+                date, 
+                BIN_TO_UUID(loyaltyProgramID) as loyaltyProgramID,
+                BIN_TO_UUID(userID) as userID,
+                points,
+                rewardType,
+                rewardAmount,
+                status,
+                purpose
+            FROM RewardsRecord WHERE loyaltyProgramID = UUID_TO_BIN(?)
         `;
         const values = [loyaltyProgramID];
         try {
             const [rows] = await dbPool.query(query, values);
-            return rows.map(row => new RewardsRecord(row));
+            if (rows.length === 0) {
+                return null;
+            }
+            return new RewardsRecord(rows[0])
         } catch (err) {
             console.error('Error finding rewards record by loyalty program ID:', err);
             throw err;
@@ -101,7 +127,7 @@ class RewardsRecord {
 
     static async updateStatus(recordID, status) {
         const query = `
-            UPDATE RewardsRecord SET status = ? WHERE recordID = ?
+            UPDATE RewardsRecord SET status = ? WHERE recordID = UUID_TO_BIN(?)
         `;
         const values = [status, recordID];
         try {
@@ -112,8 +138,6 @@ class RewardsRecord {
             throw err
         }
     }
-
-
 
 }
 
