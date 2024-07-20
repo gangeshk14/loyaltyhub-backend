@@ -88,7 +88,7 @@ class RewardsRecord {
             if (rows.length === 0) {
                 return null;
             }
-            return new RewardsRecord(rows[0])
+            return rows.map(row => new RewardsRecord(row))
         } catch (err) {
             console.error('Error finding rewards record by user ID:', err);
             throw err;
@@ -115,7 +115,7 @@ class RewardsRecord {
             if (rows.length === 0) {
                 return null;
             }
-            return new RewardsRecord(rows[0])
+            return rows.map(row => new RewardsRecord(row))
         } catch (err) {
             console.error('Error finding rewards record by loyalty program ID:', err);
             throw err;
