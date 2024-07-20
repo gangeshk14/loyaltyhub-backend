@@ -1,6 +1,5 @@
 import dbPool from "../config/database.mjs";
 import User from "./User.mjs";
-import crypto from "crypto";
 import LoyaltyProgram from "./LoyaltyProgram.mjs";
 
 class RewardsRecord {
@@ -18,7 +17,6 @@ class RewardsRecord {
 
     //Create record
     static async create({ userID, loyaltyProgramID, date, points, rewardType, rewardAmount, status, purpose }) {
-        const recordID = crypto.randomUUID();
 
         if (!(await User.findById(userID))) {
             throw new Error("User does not exist");
@@ -29,14 +27,14 @@ class RewardsRecord {
         }
 
         const query = `
-            INSERT INTO RewardsRecord (recordID, Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Status, Purpose)
-            VALUES (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?, ?)
+            INSERT INTO RewardsRecord ( Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Status, Purpose)
+            VALUES (?, UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?, ?)
         `;
-        const values = [recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose];
+        const values = [date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose];
         try {
             await dbPool.query(query, values);
             // Retrieve the newly inserted record
-            return new RewardsRecord({ recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose });
+            return new RewardsRecord({ date: date, loyaltyProgramID: loyaltyProgramID, userID: userID, points: points, rewardType: rewardType, rewardAmount: rewardAmount, status: status, purpose: purpose });
         } catch (err) {
             console.error('Error creating rewards record:', err);
             throw err;

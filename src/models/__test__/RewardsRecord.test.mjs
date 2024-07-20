@@ -1,6 +1,7 @@
 import dbPool from "../../config/database.mjs";
 import RewardsRecord from "../RewardsRecord.mjs";
 import User from "../User.mjs";
+import crypto from "crypto";
 
 async function getProgramId(loyaltyProgramName) {
   const getProgramIdQuery = `
@@ -13,6 +14,16 @@ describe('Rewards Record', () => {
   let testRewardModel;
   let testUsers;
   let testLoyaltyPrograms;
+
+  // Convenient test-helper function to create RewardRecord with a passed in uuid
+  async function createWithID({ recordID, userID, loyaltyProgramID, date, points, rewardType, rewardAmount, status, purpose }) {
+    const query = `
+            INSERT INTO RewardsRecord (recordID, Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Status, Purpose)
+            VALUES (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?, ?)
+        `;
+    await dbPool.query(query, [recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose])
+  }
+
   beforeAll(async () => {
     testUsers = {
       User1: await User.create({
@@ -76,8 +87,9 @@ describe('Rewards Record', () => {
       'https://www.testenrollmentlink2.com'
     );`),
     }
-    const rewardsRecordData = {
-      date: new Date(),
+    testRewardModel = {
+      recordID: crypto.randomUUID(),
+      date: new Date("2024-01-01"),
       loyaltyProgramID: await getProgramId('Test Program Name 1'),
       userID: testUsers.User1.userID,
       points: 0,
@@ -86,7 +98,7 @@ describe('Rewards Record', () => {
       status: 'PROCESSING',
       purpose: 'testReward',
     }
-    testRewardModel = await RewardsRecord.create(rewardsRecordData);
+    await createWithID(testRewardModel);
   });
   afterAll(async () => {
     await dbPool.query(`DROP DATABASE lhdbtest`);
@@ -96,7 +108,7 @@ describe('Rewards Record', () => {
 
   test('should create new record', async () => {
     const expected = await RewardsRecord.create({
-      date: new Date(),
+      date: new Date("2024-01-01"),
       loyaltyProgramID: await getProgramId('Test Program Name 2'),
       userID: testUsers.User2.userID,
       points: 10,
@@ -106,23 +118,25 @@ describe('Rewards Record', () => {
       purpose: 'testPurposes2'
     });
     expect(expected?.recordID).not.toBeNull();
-    const actual = await RewardsRecord.findById(expected.recordID);
-    expect({ ...actual, date: null }).toEqual({ ...expected, date: null });
+    const actual = await RewardsRecord.findByUserID(expected.userID);
+    expect({ ...actual, recordID: undefined }).toEqual(expected);
   });
-  test('should find recordBy recordID', async () => {
-    const foundRecordbyId = await RewardsRecord.findById(testRewardModel.recordID);
-    expect(foundRecordbyId).toBeInstanceOf(RewardsRecord);
-    expect({ ...foundRecordbyId, date: null }).toEqual({ ...testRewardModel, date: null });
+
+  test('should find record by id', async () => {
+    const foundRecordbyUserId = await RewardsRecord.findById(testRewardModel.recordID);
+    expect(foundRecordbyUserId).toBeInstanceOf(RewardsRecord);
+    expect(foundRecordbyUserId).toEqual(testRewardModel);
   });
+
   test('should find recordBy userID', async () => {
     const foundRecordbyUserId = await RewardsRecord.findByUserID(testRewardModel.userID);
     expect(foundRecordbyUserId).toBeInstanceOf(RewardsRecord);
-    expect({ ...foundRecordbyUserId, date: null }).toEqual({ ...testRewardModel, date: null });
+    expect(foundRecordbyUserId).toEqual(testRewardModel);
   });
   test('should find recordBy loyaltyProgramID', async () => {
     const foundRecordbyLoyaltyProgramId = await RewardsRecord.findByLoyaltyProgramID(testRewardModel.loyaltyProgramID);
     expect(foundRecordbyLoyaltyProgramId).toBeInstanceOf(RewardsRecord);
-    expect({ ...foundRecordbyLoyaltyProgramId, date: null }).toEqual({ ...testRewardModel, date: null });
+    expect(foundRecordbyLoyaltyProgramId).toEqual(testRewardModel);
   });
   test('should update rewardsRecord Status', async () => {
     const isUpdatedRecordStatus = await RewardsRecord.updateStatus(testRewardModel.recordID, 'SUCCESSFUL');
