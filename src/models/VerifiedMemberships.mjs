@@ -21,13 +21,12 @@ class verifiedMemberships {
 
         const query = `
         INSERT INTO VerifiedLoyaltyID (userID, loyaltyProgramID, membershipID, date, firstName, lastName) 
-        VALUES (UUID_TOBIN(?), UUID_TOBIN(?), ?, ?, ?, ?)
+        VALUES (UUID_TOBIN(?), UUID_TOBIN(?), UUID_TOBIN(?), ?, ?, ?)
         `;
         const values = [userID, loyaltyProgramID, membershipID, date, firstName, lastName];
         try {
-            const [result] = await dbPool.query(query, values);
-            const id = result.insertId;
-            return new verifiedMemberships({id, userID, loyaltyProgramID, membershipID, date, firstName, lastName});
+            await dbPool.query(query, values);
+            return new verifiedMemberships({userID, loyaltyProgramID, membershipID, date, firstName, lastName});
         } catch (err) {
             console.error('Error:', err);
             throw err;
@@ -36,12 +35,22 @@ class verifiedMemberships {
 
     static async findByUserID(userID) {
         const query = `
-            SELECT * FROM VerifiedLoyaltyID WHERE userID = ?
+            SELECT 
+                BIN_TO_UUID(userID) AS userID,
+                BIN_TO_UUID(loyaltyProgramID) AS loyaltyProgramID,
+                BIN_TO_UUID(membershipID) AS membershipID,
+                date,
+                firstName,
+                lastName
+            FROM VerifiedLoyaltyID WHERE userID = UUID_TO_BIN(?)        
         `;
         const values = [userID];
         try {
             const [rows] = await dbPool.query(query, values);
-            return rows.map(row => new verifiedMemberships(row));
+            if (rows.length === 0) {
+                return null;
+            }
+            return new verifiedMemberships(rows[0]);
         } catch (err) {
             console.error('Error finding by user ID:', err);
             throw err;
@@ -50,12 +59,22 @@ class verifiedMemberships {
 
     static async findByMembershipID(membershipID) {
         const query = `
-        SELECT * FROM VerifiedLoyaltyID WHERE membershipID = ?
+            SELECT
+                BIN_TO_UUID(userID) AS userID,
+                BIN_TO_UUID(loyaltyProgramID) AS loyaltyProgramID,
+                BIN_TO_UUID(membershipID) AS membershipID,
+                date,
+                firstName,
+                lastName
+            FROM VerifiedLoyaltyID WHERE membershipID = UUID_TO_BIN(?)    
         `;
         const values = [membershipID];
         try {
             const [rows] = await dbPool.query(query, values);
-            return rows.map(row => new verifiedMemberships(row));
+            if (rows.length === 0) {
+                return null;
+            }
+            return new verifiedMemberships(rows[0]);
         } catch (err) {
             console.error('Error finding by membershipID:', err);
             throw err;
