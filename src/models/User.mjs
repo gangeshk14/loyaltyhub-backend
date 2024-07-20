@@ -63,7 +63,6 @@ class User {
     //verify password
     static async verifyPassword(password, hashedPassword) {
         try {
-            console.log(hashedPassword);
             return await argon2.verify(hashedPassword, password);
         } catch (err) {
             console.error('Error verifying password:', err);
