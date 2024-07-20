@@ -95,7 +95,7 @@ export const getUsers = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-    const { userId } = req.params;
+    const userId = req.user.userID
     const { userName, mobileNumber, email } = req.body;
     try {
         console.log(1111)
