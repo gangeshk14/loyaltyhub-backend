@@ -1,5 +1,7 @@
 import dbPool from "../../config/database.mjs";
 import RewardsRecord from "../RewardsRecord.mjs";
+import User from "../User.mjs";
+import LoyaltyProgram from "../LoyaltyProgram.mjs";
 
 async function getUserId(username) {
   const getUserIdQuery = `
@@ -17,11 +19,75 @@ SELECT BIN_TO_UUID(programID) AS programID FROM loyaltyprogram WHERE name = ?
 }
 describe('Rewards Record', () => {
   let testRewardModel;
+  let testUsers;
+  let testLoyaltyPrograms;
   beforeAll(async () => {
+    testUsers = {
+      User1: await User.create({
+        userName: 'User1',
+        password: 'User1@',
+        firstName: 'User@1',
+        lastName: '1User',
+        membershipType: 'basic',
+        mobileNumber: '98654321',
+        email: 'testy@testy.com',
+      }),
+      User2: await User.create({
+        userName: 'User2',
+        password: 'User2@',
+        firstName: 'User@2',
+        lastName: '2User',
+        membershipType: 'basic',
+        mobileNumber: '98654322',
+        email: 'testy2@testy.com',
+      }),
+    }
+    testLoyaltyPrograms = {
+      Program1: await dbPool.query(`INSERT INTO loyaltyprogram (
+        name,
+        description,
+        category,
+        subCategory,
+        currencyName,
+        currencyRate,
+        company,
+        enrollmentLink
+    ) VALUES
+    (
+      'Test Program Name 1',
+      'This is a test description for the first loyalty program.',
+      'TRAVEL',
+      'HOTEL',
+      'Test Currency 1',
+      1.5,
+      'Test Company 1',
+      'https://www.testenrollmentlink1.com'
+    );`),
+      Program2: await dbPool.query(`INSERT INTO loyaltyprogram (
+        name,
+        description,
+        category,
+        subCategory,
+        currencyName,
+        currencyRate,
+        company,
+        enrollmentLink
+    ) VALUES
+    (
+      'Test Program Name 2',
+      'This is a test description for the second loyalty program.',
+      'TRAVEL',
+      'AIRLINE',
+      'Test Currency 2',
+      2.0,
+      'Test Company 2',
+      'https://www.testenrollmentlink2.com'
+    );`),
+    }
     const rewardsRecordData = {
       date: new Date(),
-      loyaltyProgramID: await getProgramId('Test Program'),
-      userID: await getUserId('testUser'),
+      loyaltyProgramID: await getProgramId('Test Program Name 1'),
+      userID: testUsers.User1.userID,
       points: 0,
       rewardType: 'testreward',
       rewardAmount: 5000,
@@ -32,14 +98,16 @@ describe('Rewards Record', () => {
   });
   afterAll(async () => {
     await dbPool.query(` DELETE FROM rewardsrecord`);
+    await dbPool.query(` DELETE FROM loyaltyprogram`);
+    await dbPool.query(` DELETE FROM user`);
     await dbPool.end();
   });
 
   test('should create new record', async () => {
     const expected = await RewardsRecord.create({
       date: new Date(),
-      loyaltyProgramID: await getProgramId('Premium Rewards'),
-      userID: await getUserId('testboy'),
+      loyaltyProgramID: await getProgramId('Test Program Name 2'),
+      userID: testUsers.User2.userID,
       points: 10,
       rewardType: 'testtype2',
       rewardAmount: 50,
