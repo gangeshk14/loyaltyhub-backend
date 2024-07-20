@@ -12,7 +12,7 @@ class LoyaltyProgram {
     this.company = loyaltyProgram.company;
     this.enrollmentLink = loyaltyProgram.enrollmentLink;
     this.image_data = loyaltyProgram.image_data;
-}
+  }
 
   static async getAllLoyaltyPrograms() {
     const query = `
@@ -74,4 +74,4 @@ class LoyaltyProgram {
     }
   }
 }
-export default LoyaltyProgram
+export default LoyaltyProgram;

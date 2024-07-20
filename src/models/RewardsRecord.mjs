@@ -1,8 +1,10 @@
+import { UUIDV1 } from "sequelize";
 import dbPool from "../config/database.mjs";
 import User from "./User.mjs";
+import crypto from 'crypto';
 
 
-class RewardsRecord{
+class RewardsRecord {
     constructor(rewardsRecord) {
         this.recordID = rewardsRecord.recordID;
         this.date = rewardsRecord.date;
@@ -16,7 +18,8 @@ class RewardsRecord{
     }
 
     //Create record
-    static async create({userID, loyaltyProgramID, date, points, rewardType, rewardAmount, status, purpose}) {
+    static async create({ userID, loyaltyProgramID, date, points, rewardType, rewardAmount, status, purpose }) {
+        const recordID = crypto.randomUUID();
 
         if (!(await User.findById(userID))) {
             throw new Error("User does not exist");
@@ -27,14 +30,13 @@ class RewardsRecord{
         }
 
         const query = `
-            INSERT INTO RewardsRecord (date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose)
-            VALUES (?, UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?, ?)
-        `;
-        const values = [date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose];
+            INSERT INTO RewardsRecord (recordID, Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Status, Purpose)
+            VALUES (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?, ?)
+       `;
+        const values = [recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose];
         try {
-            const [result] = await dbPool.query(query, values);
-            const recordID = result.insertId;
-            return new RewardsRecord({recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose});
+            await dbPool.query(query, values);
+            return new RewardsRecord({ recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose });
         } catch (err) {
             console.error('Error creating rewards record:', err);
             throw err;
@@ -87,7 +89,7 @@ class RewardsRecord{
 
     }
 
-    static async updateStatus(recordID, status){
+    static async updateStatus(recordID, status) {
         const query = `
             UPDATE RewardsRecord SET status = ? WHERE recordID = ?
         `;
