@@ -33,17 +33,25 @@ describe('Rewards Record', () => {
   afterAll(async () => {
     await dbPool.end();
   });
-  let foundRecordbyId;
 
   test('should create new record', async () => {
-    const newRecord = await RewardsRecord.create({ date: new Date(), loyaltyProgramID: await getProgramId('Premium Rewards'), userID: await getUserId('testboy'), points: 10, rewardType: 'testtype2', rewardAmount: 50, status: 'REJECTED', purpose: 'testPurposes2' });
-    console.log(newRecord[0]);
-    expect(newRecord).not.toBeNull();
-    expect(newRecord[0]).toBeInstanceOf(RewardsRecord);
+    const expected = await RewardsRecord.create({
+      date: new Date(),
+      loyaltyProgramID: await getProgramId('Premium Rewards'),
+      userID: await getUserId('testboy'),
+      points: 10,
+      rewardType: 'testtype2',
+      rewardAmount: 50,
+      status: 'REJECTED',
+      purpose: 'testPurposes2'
+    });
+    expect(expected?.recordID).not.toBeNull();
+    const actual = await RewardsRecord.findById(expected.recordID);
+    expect({ ...actual, date: null }).toEqual({ ...expected, date: null });
   });
   test('should find recordByID', async () => {
-    foundRecordbyId = await RewardsRecord.findById(testRewardModel.recordID);
-    console.log(foundRecordbyId);
+    const foundRecordbyId = await RewardsRecord.findById(testRewardModel.recordID);
     expect(foundRecordbyId).toBeInstanceOf(RewardsRecord);
+    expect({ ...foundRecordbyId, date: null }).toEqual({ ...testRewardModel, date: null });
   });
 });
