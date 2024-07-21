@@ -49,7 +49,7 @@ export const getRewardRecordById = async (req, res) => {
 };
 
 export const getRewardRecordByUserID = async (req, res) => {
-    const { userID } = req.params;
+    const  userID = req.user.userID;
     try {
         const record = await RewardsRecord.findByUserID(userID);
         const user = await User.findById(userID);
