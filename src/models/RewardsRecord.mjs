@@ -6,7 +6,7 @@ class RewardsRecord {
     constructor(rewardsRecord) {
         this.recordID = rewardsRecord.recordID;
         this.date = rewardsRecord.date;
-        this.loyaltyProgramID = rewardsRecord.loyaltyProgramID;
+        this.loyaltyProgramName = rewardsRecord.loyaltyProgramName;
         this.userID = rewardsRecord.userID;
         this.points = rewardsRecord.points;
         this.rewardType = rewardsRecord.rewardType;
@@ -16,25 +16,17 @@ class RewardsRecord {
     }
 
     //Create record
-    static async create({ userID, loyaltyProgramID, date, points, rewardType, rewardAmount, status, purpose }) {
-
-        if (!(await User.findById(userID))) {
-            throw new Error("User does not exist");
-        }
-
-        if (!(await LoyaltyProgram.getLoyaltyProgramById(loyaltyProgramID))) {
-            throw new Error("Loyalty Program does not exist");
-        }
+    static async create({ userID, loyaltyProgramId, points, rewardAmount, rewardType, purpose }) {
 
         const query = `
-            INSERT INTO RewardsRecord ( Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Status, Purpose)
-            VALUES (?, UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?, ?)
+            INSERT INTO RewardsRecord ( Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Purpose)
+            VALUES (NOW(), UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?)
         `;
-        const values = [date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose];
+        const values = [loyaltyProgramId, userID, points, rewardType, rewardAmount, purpose];
         try {
             await dbPool.query(query, values);
             // Retrieve the newly inserted record
-            return new RewardsRecord({ date: date, loyaltyProgramID: loyaltyProgramID, userID: userID, points: points, rewardType: rewardType, rewardAmount: rewardAmount, status: status, purpose: purpose });
+            return new RewardsRecord({ date: date, loyaltyProgramID: loyaltyProgramId, userID: userID, points: points, rewardType: rewardType, rewardAmount: rewardAmount, status: 'SUBMITTED', purpose: purpose });
         } catch (err) {
             console.error('Error creating rewards record:', err);
             throw err;
