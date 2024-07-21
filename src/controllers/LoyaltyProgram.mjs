@@ -8,6 +8,7 @@ export const fetchLoyaltyPrograms = async (req, res) => {
     }
     res.json(loyaltyPrograms.map(loyaltyProgram => ({
       name : loyaltyProgram.name,
+      code : loyaltyProgram.code,
       description : loyaltyProgram.description,
       category : loyaltyProgram.category,
       subcategory : loyaltyProgram.subcategory,
