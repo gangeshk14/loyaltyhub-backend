@@ -36,6 +36,7 @@ const initDB = async () => {
         CREATE TABLE IF NOT EXISTS LoyaltyProgram (
             programId BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
             name VARCHAR(255) NOT NULL,
+            code VARCHAR(10) NOT NULL,
             description TEXT,
             category ENUM('TRAVEL'),
             subCategory ENUM('HOTEL','AIRLINE'),
@@ -141,6 +142,7 @@ const initDB = async () => {
     SELECT
         LP.programId,
         LP.name,
+        LP.code,
         LP.description,
         LP.category,
         LP.subCategory,

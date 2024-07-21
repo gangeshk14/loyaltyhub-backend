@@ -4,6 +4,7 @@ class LoyaltyProgram {
   constructor(loyaltyProgram) {
     this.programID = loyaltyProgram.programID;
     this.name = loyaltyProgram.name;
+    this.code = loyaltyProgram.code;
     this.description = loyaltyProgram.description;
     this.category = loyaltyProgram.category;
     this.subcategory = loyaltyProgram.subcategory;
@@ -12,7 +13,7 @@ class LoyaltyProgram {
     this.company = loyaltyProgram.company;
     this.enrollmentLink = loyaltyProgram.enrollmentLink;
     this.image_data = loyaltyProgram.image_data;
-}
+  }
 
   static async getAllLoyaltyPrograms() {
     const query = `
@@ -74,4 +75,4 @@ class LoyaltyProgram {
     }
   }
 }
-export default LoyaltyProgram
+export default LoyaltyProgram;
