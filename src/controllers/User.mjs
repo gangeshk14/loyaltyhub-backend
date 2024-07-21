@@ -59,8 +59,7 @@ export const getProfile = async (req, res) => {
             mobileNumber: user.mobileNumber,
             email: user.email,
             pointsCount: user.pointsCount,
-            pointsRecord: user.pointsRecord,
-            userRewardsRequests: user.userRewardsRequests
+            userRewardsRecord: user.userRewardsRecord
         });
     } catch (err) {
         res.status(500).json({ message: 'Error fetching user profile', error: err.message });
@@ -83,8 +82,7 @@ export const getUsers = async (req, res) => {
             mobileNumber: user.mobileNumber,
             email: user.email,
             pointsCount: user.pointsCount,
-            pointsRecord: user.pointsRecord,
-            userRewardsRequests: user.userRewardsRequests
+            userRewardsRecord: user.userRewardsRecord
         })));
     } catch (err) {
         res.status(500).json({ message: 'Error fetching users', error: err.message });
