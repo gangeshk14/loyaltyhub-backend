@@ -1,28 +1,30 @@
 import RewardsRecord from "../models/RewardsRecord.mjs";
 import User from "../models/User.mjs";
+import LoyaltyProgram from "../models/LoyaltyProgram.mjs";
 
 export const createRewardRecord = async (req, res) => {
     const {
-        loyaltyProgramID, // remove after model update
+        loyaltyProgramName,
         points,
         purpose
     } = req.body;
     try {
+        const loyaltyProgram = await LoyaltyProgram.getLoyaltyProgramByName(loyaltyProgramName);
+        if (!(loyaltyProgram)) {
+            throw new Error('LoyaltyProgram not found');
+        }
+        const currencyRate = loyaltyProgram.currencyRate;
         const user = req.user;
-        const rewardAmount = points; //this will have to be updated with currencyRate from loyalty programs model
-        // also require getting loyalty program id from model
-        const rewardType = user.membershipType;
+        const rewardAmount = points * currencyRate;
+        const rewardType = loyaltyProgram.currencyName;
         const userID = user.userID;
-        const date = new Date();
-        const status = "SUBMITTED";
+
         const newRewardsRecord = await RewardsRecord.create({
-            date,
-            loyaltyProgramID,
             userID,
+            loyaltyProgram.programID,
             points,
+            rewardAmount,                                            
             rewardType,
-            rewardAmount,
-            status,
             purpose
         });
         res.status(201).json(newRewardsRecord);
@@ -47,7 +49,7 @@ export const getRewardRecordById = async (req, res) => {
 };
 
 export const getRewardRecordByUserID = async (req, res) => {
-    const { userID } = req.params;
+    const  userID = req.user.userID;
     try {
         const record = await RewardsRecord.findByUserID(userID);
         const user = await User.findById(userID);

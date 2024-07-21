@@ -11,23 +11,15 @@ class verifiedMemberships {
         this.lastName = verifiedMemberships.lastName;
     }
 
-    static async create({userID, loyaltyProgramID, membershipID, date, firstName, lastName }) {
-        // const userQuery = `
-        // SELECT firstName, lastName FROM User WHERE userID = UUID_TO_BIN(?);
-        // `
-        // const [userResult] = await dbPool.query(userQuery, [userID]);
-        // const firstName = userResult[0].firstName;
-        // const lastName = userResult[0].lastName;
-
+    static async create({userID, loyaltyProgramID, membershipID, firstName, lastName }) {
         const query = `
         INSERT INTO VerifiedLoyaltyID (userID, loyaltyProgramID, membershipID, date, firstName, lastName) 
-        VALUES (UUID_TOBIN(?), UUID_TOBIN(?), ?, ?, ?, ?)
+        VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?, NOW(), ?, ?)
         `;
-        const values = [userID, loyaltyProgramID, membershipID, date, firstName, lastName];
+        const values = [userID, loyaltyProgramID, membershipID, firstName, lastName];
         try {
-            const [result] = await dbPool.query(query, values);
-            const id = result.insertId;
-            return new verifiedMemberships({id, userID, loyaltyProgramID, membershipID, date, firstName, lastName});
+            await dbPool.query(query, values);
+            return new verifiedMemberships({userID, loyaltyProgramID, membershipID, firstName, lastName});
         } catch (err) {
             console.error('Error:', err);
             throw err;
@@ -36,28 +28,54 @@ class verifiedMemberships {
 
     static async findByUserID(userID) {
         const query = `
-            SELECT * FROM VerifiedLoyaltyID WHERE userID = ?
+            SELECT 
+                BIN_TO_UUID(VL.userID) AS userID,
+                BIN_TO_UUID(VL.loyaltyProgramID) AS loyaltyProgramID,
+                VL.membershipID,
+                VL.date,
+                VL.firstName,
+                VL.lastName,
+                LP.name AS loyaltyProgramName,
+                LP.image_data AS loyaltyProgramImage
+            FROM VerifiedLoyaltyID VL
+            JOIN LoyaltyProgram LP ON VL.loyaltyProgramID = LP.programId
+            LEFT JOIN LoyaltyProgramImage LPI ON LP.programId = LPI.LoyaltyProgramID
+            WHERE VL.userID = UUID_TO_BIN(?)        
         `;
         const values = [userID];
         try {
             const [rows] = await dbPool.query(query, values);
-            return rows.map(row => new verifiedMemberships(row));
+            if (rows.length === 0) {
+                return null;
+            }
+            return new verifiedMemberships(rows[0]);
         } catch (err) {
             console.error('Error finding by user ID:', err);
             throw err;
         }
     }
 
-    static async findByMembershipID(membershipID) {
+    static async findByMembershipID(loyaltyProgramID, userID) {
         const query = `
-        SELECT * FROM VerifiedLoyaltyID WHERE membershipID = ?
+            SELECT
+                BIN_TO_UUID(userID) AS userID,
+                BIN_TO_UUID(loyaltyProgramID) AS loyaltyProgramID,
+                membershipID,
+                date,
+                firstName,
+                lastName
+            FROM VerifiedLoyaltyID 
+            WHERE loyaltyProgramID = UUID_TO_BIN(?) AND userID = UUID_TO_BIN(?)
         `;
-        const values = [membershipID];
+        const values = [loyaltyProgramID, userID];
         try {
             const [rows] = await dbPool.query(query, values);
-            return rows.map(row => new verifiedMemberships(row));
+            if (rows.length === 0) {
+                return null;
+            }
+            return new verifiedMemberships(rows[0]);
         } catch (err) {
-            console.error('Error finding by membershipID:', err);
+            console.error('Error finding by program id and userid:', err);
             throw err;
         }
     }
