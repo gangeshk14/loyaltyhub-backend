@@ -21,7 +21,7 @@ class verifiedMemberships {
 
         const query = `
         INSERT INTO VerifiedLoyaltyID (userID, loyaltyProgramID, membershipID, date, firstName, lastName) 
-        VALUES (UUID_TOBIN(?), UUID_TOBIN(?), UUID_TOBIN(?), ?, ?, ?)
+        VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?)
         `;
         const values = [userID, loyaltyProgramID, membershipID, date, firstName, lastName];
         try {
@@ -36,13 +36,18 @@ class verifiedMemberships {
     static async findByUserID(userID) {
         const query = `
             SELECT 
-                BIN_TO_UUID(userID) AS userID,
-                BIN_TO_UUID(loyaltyProgramID) AS loyaltyProgramID,
-                BIN_TO_UUID(membershipID) AS membershipID,
-                date,
-                firstName,
-                lastName
-            FROM VerifiedLoyaltyID WHERE userID = UUID_TO_BIN(?)        
+                BIN_TO_UUID(VL.userID) AS userID,
+                BIN_TO_UUID(VL.loyaltyProgramID) AS loyaltyProgramID,
+                VL.membershipID,
+                VL.date,
+                VL.firstName,
+                VL.lastName,
+                LP.name AS loyaltyProgramName,
+                LP.image_data AS loyaltyProgramImage
+            FROM VerifiedLoyaltyID VL
+            JOIN LoyaltyProgram LP ON VL.loyaltyProgramID = LP.programId
+            LEFT JOIN LoyaltyProgramImage LPI ON LP.programId = LPI.LoyaltyProgramID
+            WHERE VL.userID = UUID_TO_BIN(?)        
         `;
         const values = [userID];
         try {
@@ -57,18 +62,19 @@ class verifiedMemberships {
         }
     }
 
-    static async findByMembershipID(membershipID) {
+    static async findByMembershipID(loyaltyProgramID, userID) {
         const query = `
             SELECT
                 BIN_TO_UUID(userID) AS userID,
                 BIN_TO_UUID(loyaltyProgramID) AS loyaltyProgramID,
-                BIN_TO_UUID(membershipID) AS membershipID,
+                membershipID,
                 date,
                 firstName,
                 lastName
-            FROM VerifiedLoyaltyID WHERE membershipID = UUID_TO_BIN(?)    
+            FROM VerifiedLoyaltyID 
+            WHERE loyaltyProgramID = UUID_TO_BIN(?) AND userID = UUID_TO_BIN(?)
         `;
-        const values = [membershipID];
+        const values = [loyaltyProgramID, userID];
         try {
             const [rows] = await dbPool.query(query, values);
             if (rows.length === 0) {
@@ -76,7 +82,7 @@ class verifiedMemberships {
             }
             return new verifiedMemberships(rows[0]);
         } catch (err) {
-            console.error('Error finding by membershipID:', err);
+            console.error('Error finding by program id and userid:', err);
             throw err;
         }
     }
