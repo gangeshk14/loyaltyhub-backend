@@ -12,8 +12,7 @@ class User {
         this.mobileNumber = user.mobileNumber;
         this.email = user.email;
         this.pointsCount = user.pointsCount;
-        this.pointsRecord = user.pointsRecord || [];
-        this.userRewardsRequests = user.userRewardsRequests || [];
+        this.userRewardsRecord = user.userRewardsRecord || [];
     }
     //create user
     static async create({ userName, password, firstName, lastName, membershipType, mobileNumber, email }) {
@@ -81,8 +80,7 @@ class User {
                 mobileNumber,
                 email,
                 pointsCount,
-                pointsRecord,
-                userRewardsRequests
+                userRewardsRecord
             FROM UserView
         `;
         try {
@@ -106,8 +104,7 @@ class User {
                 mobileNumber,
                 email,
                 pointsCount,
-                pointsRecord,
-                userRewardsRequests
+                userRewardsRecord
             FROM UserView
             WHERE userID = UUID_TO_BIN(?)
         `;
@@ -136,8 +133,7 @@ class User {
                 mobileNumber,
                 email,
                 pointsCount,
-                pointsRecord,
-                userRewardsRequests
+                userRewardsRecord
             FROM UserView
             WHERE email = ?
         `;
@@ -166,8 +162,7 @@ class User {
                 mobileNumber,
                 email,
                 pointsCount,
-                pointsRecord,
-                userRewardsRequests
+                userRewardsRecord
             FROM UserView
             WHERE userName = ?
         `;
@@ -195,8 +190,7 @@ class User {
                 mobileNumber,
                 email,
                 pointsCount,
-                pointsRecord,
-                userRewardsRequests
+                userRewardsRecord
             FROM UserView
         `;
         try {

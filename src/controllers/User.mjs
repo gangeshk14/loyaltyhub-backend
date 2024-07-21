@@ -29,7 +29,6 @@ export const loginUser = async (req, res) => {
     const { userName, password } = req.body;
     try {
         const user = await User.findByUserName(userName);
-        console.log(user)
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -47,7 +46,6 @@ export const loginUser = async (req, res) => {
 
 export const getProfile = async (req, res) => {
     const userID = req.user.userID;
-    console.log(req.user)
     try {
         const user = await User.findById(userID);
 
@@ -97,14 +95,11 @@ export const updateProfile = async (req, res) => {
     const userId = req.user.userID
     const { userName, mobileNumber, email } = req.body;
     try {
-        console.log(1111)
         const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ error: 'Fail to identify user by userID' });
         }
         const result = await User.update(userId, userName, mobileNumber, email);
-        console.log('Updated user data:', { userName, mobileNumber, email });
-        console.log('Function end');
         res.status(200).json(result);
     } catch (error) {
         console.error('Update error:', error);
