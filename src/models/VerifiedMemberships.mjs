@@ -11,22 +11,15 @@ class verifiedMemberships {
         this.lastName = verifiedMemberships.lastName;
     }
 
-    static async create({userID, loyaltyProgramID, membershipID, date, firstName, lastName }) {
-        // const userQuery = `
-        // SELECT firstName, lastName FROM User WHERE userID = UUID_TO_BIN(?);
-        // `
-        // const [userResult] = await dbPool.query(userQuery, [userID]);
-        // const firstName = userResult[0].firstName;
-        // const lastName = userResult[0].lastName;
-
+    static async create({userID, loyaltyProgramID, membershipID, firstName, lastName }) {
         const query = `
         INSERT INTO VerifiedLoyaltyID (userID, loyaltyProgramID, membershipID, date, firstName, lastName) 
-        VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?)
+        VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?, NOW(), ?, ?)
         `;
-        const values = [userID, loyaltyProgramID, membershipID, date, firstName, lastName];
+        const values = [userID, loyaltyProgramID, membershipID, firstName, lastName];
         try {
             await dbPool.query(query, values);
-            return new verifiedMemberships({userID, loyaltyProgramID, membershipID, date, firstName, lastName});
+            return new verifiedMemberships({userID, loyaltyProgramID, membershipID, firstName, lastName});
         } catch (err) {
             console.error('Error:', err);
             throw err;
