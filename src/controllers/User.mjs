@@ -63,7 +63,6 @@ export const getProfile = async (req, res) => {
             pointsCount: user.pointsCount,
             pointsRecord: user.pointsRecord,
             userRewardsRequests: user.userRewardsRequests
-            // Add other properties as needed
         });
     } catch (err) {
         res.status(500).json({ message: 'Error fetching user profile', error: err.message });

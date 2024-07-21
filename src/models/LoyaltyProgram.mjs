@@ -36,7 +36,17 @@ class LoyaltyProgram {
   static async getLoyaltyProgramById(programId) {
     const query = `
       SELECT 
-        *
+        BIN_TO_UUID(programId),
+        name,
+        code,
+        description,
+        category,
+        subCategory,
+        currencyName,
+        currencyRate,
+        company,
+        enrollmentLink,
+        image_data
       FROM
         LoyaltyProgramView
       WHERE
@@ -57,7 +67,17 @@ class LoyaltyProgram {
   static async getLoyaltyProgramByName(name) {
     const query = `
       SELECT 
-        *
+        BIN_TO_UUID(programId),
+        name,
+        code,
+        description,
+        category,
+        subCategory,
+        currencyName,
+        currencyRate,
+        company,
+        enrollmentLink,
+        image_data
       FROM
         LoyaltyProgramView
       WHERE

@@ -26,7 +26,7 @@ class RewardsRecord {
         try {
             await dbPool.query(query, values);
             // Retrieve the newly inserted record
-            return new RewardsRecord({ date: date, loyaltyProgramID: loyaltyProgramId, userID: userID, points: points, rewardType: rewardType, rewardAmount: rewardAmount, status: 'SUBMITTED', purpose: purpose });
+            return new RewardsRecord({ date: Date(), loyaltyProgramID: loyaltyProgramId, userID: userID, points: points, rewardType: rewardType, rewardAmount: rewardAmount, status: 'SUBMITTED', purpose: purpose });
         } catch (err) {
             console.error('Error creating rewards record:', err);
             throw err;
