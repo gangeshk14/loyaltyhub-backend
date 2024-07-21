@@ -20,7 +20,7 @@ class RewardsRecord {
 
         const query = `
             INSERT INTO RewardsRecord ( Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Purpose)
-            VALUES (NOW(), ?, ?, ?, ?, ?, ?)
+            VALUES (NOW(), UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?)
         `;
         const values = [loyaltyProgramId, userID, points, rewardType, rewardAmount, purpose];
         try {
