@@ -6,7 +6,7 @@ class RewardsRecord {
     constructor(rewardsRecord) {
         this.recordID = rewardsRecord.recordID;
         this.date = rewardsRecord.date;
-        this.loyaltyProgramID = rewardsRecord.loyaltyProgramID;
+        this.loyaltyProgramName = rewardsRecord.loyaltyProgramName;
         this.userID = rewardsRecord.userID;
         this.points = rewardsRecord.points;
         this.rewardType = rewardsRecord.rewardType;
@@ -16,15 +16,20 @@ class RewardsRecord {
     }
 
     //Create record
-    static async create({ userID, loyaltyProgramID, date, points, rewardType, rewardAmount, status, purpose }) {
+    static async create({ userID, loyaltyProgramName, date, points, rewardAmount, status, purpose }) {
+
+        const loyaltyProgram = await LoyaltyProgram.getLoyaltyProgramByName(loyaltyProgramName);
+
+        if (!(loyaltyProgram)) {
+            throw new Error('LoyaltyProgram not found');
+        }
 
         if (!(await User.findById(userID))) {
             throw new Error("User does not exist");
         }
 
-        if (!(await LoyaltyProgram.getLoyaltyProgramById(loyaltyProgramID))) {
-            throw new Error("Loyalty Program does not exist");
-        }
+        const loyaltyProgramID = loyaltyProgram.programID;
+        const rewardType = loyaltyProgram.currencyName
 
         const query = `
             INSERT INTO RewardsRecord ( Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Status, Purpose)
