@@ -75,7 +75,7 @@ const initDB = async () => {
         CREATE TABLE IF NOT EXISTS VerifiedLoyaltyID (
             UserID BINARY(16) NOT NULL,
             LoyaltyProgramID BINARY(16) NOT NULL,
-            MembershipID VARCHAR(255) NOT NULL,
+            MembershipID VARCHAR(255) UNIQUE NOT NULL,
             Date DATETIME NOT NULL,
             firstName VARCHAR(255) NOT NULL,
             lastName VARCHAR(255) NOT NULL,
@@ -92,6 +92,52 @@ const initDB = async () => {
             FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId)
         );
     `;
+    const createAccrualTableQuery = `
+        CREATE TABLE IF NOT EXISTS AccrualTable (
+            MembershipID VARCHAR(255) NOT NULL,
+            firstName VARCHAR(255) NOT NULL,
+            lastName VARCHAR(255) NOT NULL,
+            Date DATETIME NOT NULL,
+            rewardAmount INT NOT NULL,
+            loyaltyCode VARCHAR(20) NOT NULL,
+            rewardRecordID VARCHAR(36) NOT NULL
+        );
+    `;
+    const createAccrualSchedulerQuery = `
+        CREATE EVENT IF NOT EXISTS InsertAccrualRecords
+        ON SCHEDULE EVERY 1 MINUTE
+        STARTS '2024-07-21 15:00:00'
+        DO
+        BEGIN
+            INSERT INTO AccrualTable (MembershipID, firstName, lastName, Date, rewardAmount, loyaltyCode, rewardRecordID)
+            SELECT
+                v.MembershipID,
+                v.firstName,
+                v.lastName,
+                r.Date,
+                r.rewardAmount,
+                l.code AS loyaltyCode,
+                BIN_TO_UUID(r.recordID) AS rewardRecordID
+            FROM
+                RewardsRecord r
+            JOIN
+                VerifiedLoyaltyID v ON r.LoyaltyProgramID = v.LoyaltyProgramID AND r.UserID = v.UserID
+            JOIN
+                LoyaltyProgram l ON r.LoyaltyProgramID = l.programId
+            WHERE
+                r.Date >= NOW() - INTERVAL 1 MINUTE AND r.Date < NOW();
+        END;
+    `
+    const clearOldAccrualRecordsScheduler = `
+        CREATE EVENT IF NOT EXISTS ClearOldAccrualRecords
+        ON SCHEDULE EVERY 1 DAY
+        STARTS '2024-07-21 23:01:00'
+        DO
+        BEGIN
+            DELETE FROM AccrualTable
+            WHERE TIME(Date) < '23:00:00';
+        END;    
+    `
 
     const createUserViewQuery = `
         CREATE OR REPLACE VIEW UserView AS
@@ -106,7 +152,7 @@ const initDB = async () => {
             U.email,
             U.pointsCount,
             COALESCE(JSON_ARRAYAGG(
-                CASE WHEN RR.Status IN ('GRANTED', 'REJECTED') THEN
+                CASE WHEN RR.Status IN ('SUCCESSFUL', 'REJECTED') THEN
                     JSON_OBJECT(
                         'recordID', BIN_TO_UUID(RR.recordID),
                         'Date', RR.Date,
@@ -120,7 +166,7 @@ const initDB = async () => {
                 END
             ), JSON_ARRAY()) AS pointsRecord,
             COALESCE(JSON_ARRAYAGG(
-                CASE WHEN RR.Status = 'PENDING' THEN
+                CASE WHEN RR.Status IN ('SUBMITTED', 'PROCESSING') THEN
                     JSON_OBJECT(
                         'recordID', BIN_TO_UUID(RR.recordID),
                         'Date', RR.Date,
@@ -167,6 +213,9 @@ const initDB = async () => {
         await dbPool.query(createUserViewQuery);
         await dbPool.query(createLoyaltyProgramViewQuery);
         await dbPool.query(createLoyaltyLoginTableQuery);
+        await dbPool.query(createAccrualTableQuery);
+        await dbPool.query(createAccrualSchedulerQuery);
+        await dbPool.query(clearOldAccrualRecordsScheduler);
         console.log('Database initialized');
     } catch (err) {
         console.error('Error initializing database:', err);
