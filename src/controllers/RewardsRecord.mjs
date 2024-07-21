@@ -10,23 +10,23 @@ export const createRewardRecord = async (req, res) => {
     } = req.body;
     try {
         const loyaltyProgram = await LoyaltyProgram.getLoyaltyProgramByName(loyaltyProgramName);
+        const programID = loyaltyProgram.programID;
+        if (!(loyaltyProgram)) {
+            throw new Error('LoyaltyProgram not found');
+        }
         const currencyRate = loyaltyProgram.currencyRate;
         const user = req.user;
-        const rewardAmount = user.points * currencyRate;
-        const rewardType = user.membershipType;
+        const rewardAmount = points * currencyRate;
+        const rewardType = loyaltyProgram.currencyName;
         const userID = user.userID;
-        const date = new Date();
-        const status = "SUBMITTED";
 
         const newRewardsRecord = await RewardsRecord.create({
-            date,
-            loyaltyProgramName,
-            userID,
-            points,
-            rewardType,
-            rewardAmount,
-            status,
-            purpose
+            userID: userID,
+            loyaltyProgramId :programID,
+            points: points,
+            rewardAmount :rewardAmount,
+            rewardType :rewardType,
+            purpose :purpose
         });
         res.status(201).json(newRewardsRecord);
     } catch (error) {
@@ -50,7 +50,7 @@ export const getRewardRecordById = async (req, res) => {
 };
 
 export const getRewardRecordByUserID = async (req, res) => {
-    const { userID } = req.params;
+    const  userID = req.user.userID;
     try {
         const record = await RewardsRecord.findByUserID(userID);
         const user = await User.findById(userID);
