@@ -152,7 +152,6 @@ const initDB = async () => {
             U.email,
             U.pointsCount,
             COALESCE(JSON_ARRAYAGG(
-                CASE WHEN RR.Status IN ('SUCCESSFUL', 'REJECTED') THEN
                     JSON_OBJECT(
                         'recordID', BIN_TO_UUID(RR.recordID),
                         'Date', RR.Date,
@@ -163,22 +162,7 @@ const initDB = async () => {
                         'Status', RR.Status,
                         'Purpose', RR.Purpose
                     )
-                END
-            ), JSON_ARRAY()) AS pointsRecord,
-            COALESCE(JSON_ARRAYAGG(
-                CASE WHEN RR.Status IN ('SUBMITTED', 'PROCESSING') THEN
-                    JSON_OBJECT(
-                        'recordID', BIN_TO_UUID(RR.recordID),
-                        'Date', RR.Date,
-                        'LoyaltyProgramID', BIN_TO_UUID(RR.LoyaltyProgramID),
-                        'Points', RR.Points,
-                        'rewardType', RR.rewardType,
-                        'rewardAmount', RR.rewardAmount,
-                        'Status', RR.Status,
-                        'Purpose', RR.Purpose
-                    )
-                END
-            ), JSON_ARRAY()) AS userRewardsRequests
+            ), JSON_ARRAY()) AS userRewardsRecord
         FROM User U
         LEFT JOIN RewardsRecord RR ON U.userID = RR.UserID
         GROUP BY U.userID;

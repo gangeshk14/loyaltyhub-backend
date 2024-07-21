@@ -6,7 +6,7 @@ class RewardsRecord {
     constructor(rewardsRecord) {
         this.recordID = rewardsRecord.recordID;
         this.date = rewardsRecord.date;
-        this.loyaltyProgramName = rewardsRecord.loyaltyProgramName;
+        this.loyaltyProgramID = rewardsRecord.loyaltyProgramID;
         this.userID = rewardsRecord.userID;
         this.points = rewardsRecord.points;
         this.rewardType = rewardsRecord.rewardType;
