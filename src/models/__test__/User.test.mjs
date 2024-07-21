@@ -1,12 +1,12 @@
 import dbPool from "../../config/database.mjs";
 import { hash, verify } from "argon2";
-import {jest} from '@jest/globals';
+import { jest } from '@jest/globals';
 jest.mock('argon2', () => ({
     hash: jest.fn(),
     verify: jest.fn(),
 }));
 const argon2 = await import('argon2');
-import User from "../user.mjs";
+import User from "../User.mjs";
 
 
 describe('User Model', () => {
