@@ -10,6 +10,7 @@ export const createRewardRecord = async (req, res) => {
     } = req.body;
     try {
         const loyaltyProgram = await LoyaltyProgram.getLoyaltyProgramByName(loyaltyProgramName);
+        const programID = loyaltyProgram.programID;
         if (!(loyaltyProgram)) {
             throw new Error('LoyaltyProgram not found');
         }
@@ -20,12 +21,12 @@ export const createRewardRecord = async (req, res) => {
         const userID = user.userID;
 
         const newRewardsRecord = await RewardsRecord.create({
-            userID,
-            loyaltyProgram.programID,
-            points,
-            rewardAmount,                                            
-            rewardType,
-            purpose
+            userID: userID,
+            loyaltyProgramId :programID,
+            points: points,
+            rewardAmount :rewardAmount,
+            rewardType :rewardType,
+            purpose :purpose
         });
         res.status(201).json(newRewardsRecord);
     } catch (error) {

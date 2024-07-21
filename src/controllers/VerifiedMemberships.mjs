@@ -2,6 +2,7 @@ import verifiedMemberships from "../models/VerifiedMemberships.mjs";
 import User from "../models/User.mjs";
 import dbPool from "../config/database.mjs";
 import loyaltyProgram from "../models/LoyaltyProgram.mjs";
+import LoyaltyProgram from "../models/LoyaltyProgram.mjs";
 
 export const addVerifiedMembership = async (req, res) => {
     const {
@@ -26,7 +27,7 @@ export const addVerifiedMembership = async (req, res) => {
             })
         }
 
-        const membership = await verifiedMemberships.create({user.userID, loyaltyProgram.programId, membershipID, user.firstName, user.lastName});
+        const membership = await verifiedMemberships.create({userID:user.userID, loyaltyProgramID:loyaltyProgram.programID, membershipID: membershipID, firstName: user.firstName, lastName: user.lastName});
         res.status(201).json(membership);
     } catch (error) {
         console.error('Error adding verified membership:', error);
