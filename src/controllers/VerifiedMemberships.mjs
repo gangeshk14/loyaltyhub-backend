@@ -5,16 +5,19 @@ import loyaltyProgram from "../models/LoyaltyProgram.mjs";
 
 export const addVerifiedMembership = async (req, res) => {
     const {
-        loyaltyProgramID, //also requires update
+        loyaltyProgramName, //also requires update
         membershipID
     } = req.body;
     try {
-        const user = req.user;
-        const userID = user.userID;
-        const date = new Date();
-        const firstName = user.firstName;
-        const lastName = user.lastName;
-
+        const userID = req.user.userID;
+        const loyaltyProgram = await LoyaltyProgram.getLoyaltyProgramByName(loyaltyProgramName);
+        if (!(loyaltyProgram)) {
+            throw new Error('LoyaltyProgram not found');
+        }
+        const user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         const [existingMembership] = await dbPool.query('SELECT * FROM VerifiedLoyaltyID WHERE membershipID = ?', [membershipID]);
         if (existingMembership.length > 0) {
             return res.status(200).json({
@@ -23,7 +26,7 @@ export const addVerifiedMembership = async (req, res) => {
             })
         }
 
-        const membership = await verifiedMemberships.create({userID, loyaltyProgramID, membershipID, date, firstName, lastName});
+        const membership = await verifiedMemberships.create({user.userID, loyaltyProgram.programId, membershipID, user.firstName, user.lastName});
         res.status(201).json(membership);
     } catch (error) {
         console.error('Error adding verified membership:', error);
@@ -32,7 +35,7 @@ export const addVerifiedMembership = async (req, res) => {
 };
 
 export const getVerifiedMembershipByUser = async (req, res) => {
-    const { userID } = req.params;
+    const userID  = req.user.userID
     try {
         const user = await User.findById(userID);
         const membership = await verifiedMemberships.findByUserID(userID);
