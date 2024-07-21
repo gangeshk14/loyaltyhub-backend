@@ -141,31 +141,40 @@ const initDB = async () => {
 
     const createUserViewQuery = `
         CREATE OR REPLACE VIEW UserView AS
-        SELECT 
-            U.userID,
-            U.userName,
-            U.firstName,
-            U.lastName,
-            U.password,
-            U.membershipType,
-            U.mobileNumber,
-            U.email,
-            U.pointsCount,
-            COALESCE(JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'recordID', BIN_TO_UUID(RR.recordID),
-                        'Date', RR.Date,
-                        'LoyaltyProgramID', BIN_TO_UUID(RR.LoyaltyProgramID),
-                        'Points', RR.Points,
-                        'rewardType', RR.rewardType,
-                        'rewardAmount', RR.rewardAmount,
-                        'Status', RR.Status,
-                        'Purpose', RR.Purpose
-                    )
-            ), JSON_ARRAY()) AS userRewardsRecord
-        FROM User U
-        LEFT JOIN RewardsRecord RR ON U.userID = RR.UserID
-        GROUP BY U.userID;
+            SELECT 
+                U.userID,
+                U.userName,
+                U.firstName,
+                U.lastName,
+                U.password,
+                U.membershipType,
+                U.mobileNumber,
+                U.email,
+                U.pointsCount,
+                COALESCE(
+                    CASE 
+                        WHEN COUNT(RR.recordID) > 0 THEN
+                            JSON_ARRAYAGG(
+                                JSON_OBJECT(
+                                    'recordID', BIN_TO_UUID(RR.recordID),
+                                    'date', RR.Date,
+                                    'loyaltyProgramID', BIN_TO_UUID(RR.LoyaltyProgramID),
+                                    'points', RR.Points,
+                                    'rewardType', RR.rewardType,
+                                    'rewardAmount', RR.rewardAmount,
+                                    'status', RR.Status,
+                                    'purpose', RR.Purpose
+                                )
+                            )
+                        ELSE
+                            JSON_ARRAY()
+                    END,
+                    JSON_ARRAY()
+                ) AS userRewardsRecord
+            FROM User U
+            LEFT JOIN RewardsRecord RR ON U.userID = RR.UserID
+            GROUP BY U.userID;
+
     `;
     const createLoyaltyProgramViewQuery = `
     CREATE OR REPLACE VIEW LoyaltyProgramView AS
