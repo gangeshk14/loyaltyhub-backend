@@ -36,7 +36,7 @@ class verifiedMemberships {
                 VL.firstName,
                 VL.lastName,
                 LP.name AS loyaltyProgramName,
-                LP.image_data AS loyaltyProgramImage
+                LPI.image_data AS loyaltyProgramImage
             FROM VerifiedLoyaltyID VL
             JOIN LoyaltyProgram LP ON VL.loyaltyProgramID = LP.programId
             LEFT JOIN LoyaltyProgramImage LPI ON LP.programId = LPI.LoyaltyProgramID
@@ -48,7 +48,17 @@ class verifiedMemberships {
             if (rows.length === 0) {
                 return null;
             }
-            return new verifiedMemberships(rows[0]);
+            const row = rows[0];
+            return {
+                userID: row.userID,
+                loyaltyProgramID: row.loyaltyProgramID,
+                membershipID: row.membershipID,
+                date: row.date,
+                firstName: row.firstName,
+                lastName: row.lastName,
+                loyaltyProgramName: row.loyaltyProgramName,
+                loyaltyProgramImage: row.loyaltyProgramImage,
+            };
         } catch (err) {
             console.error('Error finding by user ID:', err);
             throw err;
@@ -82,3 +92,5 @@ class verifiedMemberships {
 
 
 }
+
+export default verifiedMemberships;
