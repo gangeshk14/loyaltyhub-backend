@@ -48,8 +48,7 @@ class verifiedMemberships {
             if (rows.length === 0) {
                 return null;
             }
-            const row = rows[0];
-            return {
+            return rows.map(row => ({
                 userID: row.userID,
                 loyaltyProgramID: row.loyaltyProgramID,
                 membershipID: row.membershipID,
@@ -58,7 +57,7 @@ class verifiedMemberships {
                 lastName: row.lastName,
                 loyaltyProgramName: row.loyaltyProgramName,
                 loyaltyProgramImage: row.loyaltyProgramImage,
-            };
+            }));
         } catch (err) {
             console.error('Error finding by user ID:', err);
             throw err;
