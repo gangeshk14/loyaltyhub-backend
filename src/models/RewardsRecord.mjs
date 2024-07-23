@@ -124,7 +124,8 @@ class RewardsRecord {
             UPDATE RewardsRecord SET statuscode = ? WHERE recordID = UUID_TO_BIN(?)
         `;
         const values = [status, recordID];
-        if(recordID==='0006' || recordID==='0007') {
+        const currRecordID = await this.getStatus(recordID)
+        if(currRecordID==='0006' || currRecordID==='0007') {
             try {
                 await dbPool.query(query, values);
                 return true;
