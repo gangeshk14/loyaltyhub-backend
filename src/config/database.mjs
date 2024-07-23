@@ -65,10 +65,12 @@ const initDB = async () => {
             Points INT NOT NULL,
             rewardType VARCHAR(255),
             rewardAmount INT,
-            Status ENUM('SUBMITTED','PROCESSING', 'SUCCESSFUL', 'REJECTED') NOT NULL DEFAULT 'SUBMITTED',
+            StatusCode VARCHAR(4) NOT NULL DEFAULT '0006',
             Purpose VARCHAR(255) NULL,
+            Notified TINYINT(1) DEFAULT 0,
             FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId),
-            FOREIGN KEY (UserID) REFERENCES User(userID)
+            FOREIGN KEY (UserID) REFERENCES User(userID),
+            FOREIGN KEY (StatusCode) REFERENCES StatusCode(code)
         );
     `;
     const createVerifiedLoyaltyIDTableQuery = `
@@ -90,6 +92,12 @@ const initDB = async () => {
             firstName VARCHAR(255) NOT NULL,
             lastName VARCHAR(255) NOT NULL,
             FOREIGN KEY (LoyaltyProgramID) REFERENCES LoyaltyProgram(programId)
+        );
+    `;
+    const createStatusCodeTableQuery = `
+        CREATE TABLE IF NOT EXISTS StatusCode (
+            code VARCHAR(4) PRIMARY KEY,
+            description VARCHAR(255) NOT NULL
         );
     `;
     const createAccrualTableQuery = `
@@ -125,7 +133,8 @@ const initDB = async () => {
             JOIN
                 LoyaltyProgram l ON r.LoyaltyProgramID = l.programId
             WHERE
-                r.Date >= NOW() - INTERVAL 1 MINUTE AND r.Date < NOW();
+                r.Date >= NOW() - INTERVAL 1 MINUTE AND r.Date < NOW()
+                AND r.Status = '0006';
         END;
     `
     const clearOldAccrualRecordsScheduler = `
@@ -135,7 +144,7 @@ const initDB = async () => {
         DO
         BEGIN
             DELETE FROM AccrualTable
-            WHERE TIME(Date) < '23:00:00';
+            WHERE TIME(Date) <= '23:00:00';
         END;    
     `
 
@@ -162,7 +171,8 @@ const initDB = async () => {
                                     'points', RR.Points,
                                     'rewardType', RR.rewardType,
                                     'rewardAmount', RR.rewardAmount,
-                                    'status', RR.Status,
+                                    'status', SC.description,
+                                    'notified', RR.Notified,
                                     'purpose', RR.Purpose
                                 )
                             )
@@ -173,6 +183,7 @@ const initDB = async () => {
                 ) AS userRewardsRecord
             FROM User U
             LEFT JOIN RewardsRecord RR ON U.userID = RR.UserID
+            LEFT JOIN StatusCode SC ON RR.StatusCode = SC.code
             GROUP BY U.userID;
 
     `;
@@ -199,6 +210,7 @@ const initDB = async () => {
     `;
     try {
         await dbPool.query(createUserTableQuery);
+        await dbPool.query(createStatusCodeTableQuery);
         await dbPool.query(createLoyaltyProgramTableQuery);
         await dbPool.query(createLoyaltyProgramImageTableQuery);
         await dbPool.query(createRewardsRecordTableQuery);
