@@ -27,3 +27,14 @@ VALUES
 ('Air France-KLM Flying Blue','AF-KL', 'Flying Blue is the frequent flyer program of Air France and KLM. Members can earn and spend miles on Air France, KLM, and partner airlines, as well as with non-airline partners.', 'TRAVEL', 'AIRLINE','Flying Blue Miles', 1.0, 'Air France-KLM', 'https://login.flyingblue.com/enrol/flyingblue'),
 ('British Airways Executive Club','BA', 'The British Airways Executive Club allows members to collect Avios points when flying with British Airways, oneworld® and partner airlines. Avios can be redeemed for flights, upgrades, hotels, car rentals, and more.', 'TRAVEL', 'AIRLINE','Avios', 1.0, 'British Airways', 'https://www.britishairways.com/travel/register-now'),
 ('Lufthansa Miles & More','LH', 'Miles & More is the frequent flyer and awards program of Lufthansa. Members earn miles when flying Lufthansa, Star Alliance partners, and other airline partners. Miles can be redeemed for award flights, upgrades, and other rewards.', 'TRAVEL', 'AIRLINE','Miles & More Miles', 1.0, 'Lufthansa', 'https://www.miles-and-more.com/row/en.html');
+
+INSERT INTO statuscode (code, description) VALUES
+('0000', 'success'),
+('0001', 'member not found'),
+('0002', 'member name mismatch'),
+('0003', 'member account closed'),
+('0004', 'member account suspended'),
+('0005', 'member ineligible for accrual'),
+('0006', 'submitted'),
+('0007', 'processing'),
+('0099', 'unable to process, please contact support for more information');

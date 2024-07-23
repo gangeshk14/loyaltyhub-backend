@@ -2,10 +2,29 @@ import express from 'express'
 import session from 'express-session';
 import cors from 'cors'
 import dbPool from "./config/database.mjs";
+// import uploadFiles from "./services/testSftp.mjs"
+import sftpConfig from "./config/sftp.mjs";
 import router from './routes/index.mjs';
 import dotenv from 'dotenv';
+import exportAccrualsToCSV  from "./services/AccrualToSFTP.mjs";
+import Accrual from "./models/Accrual.mjs";
+import cron from 'node-cron';
 const app = express()
 dotenv.config();
+// cron.schedule('48 03 * * *', () => {
+//     console.log('Running scheduled task: exportAccrualsToCSV');
+//
+//     exportAccrualsToCSV()
+//         .then(() => {
+//             console.log('CSV export completed successfully.');
+//         })
+//         .catch(err => {
+//             console.error('Error during CSV export:', err);
+//         });
+// }, {
+//     scheduled: true,
+//     timezone: "Asia/Singapore" // Set timezone to Singapore
+// });
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,4 +51,3 @@ if (process.env.NODE_ENV !== 'test') {
         console.log(`Server is running on Port:${PORT}`)
     })
 }
-export default app;
