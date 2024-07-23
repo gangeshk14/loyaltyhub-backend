@@ -11,7 +11,8 @@ class RewardsRecord {
         this.points = rewardsRecord.points;
         this.rewardType = rewardsRecord.rewardType;
         this.rewardAmount = rewardsRecord.rewardAmount;
-        this.status = rewardsRecord.status
+        this.statuscode = rewardsRecord.statuscode;
+        this.notified = rewardsRecord.notified;
         this.purpose = rewardsRecord.purpose || null;
     }
 
@@ -43,7 +44,8 @@ class RewardsRecord {
                 points,
                 rewardType,
                 rewardAmount,
-                status,
+                statuscode,
+                notified,
                 purpose
             FROM RewardsRecord WHERE recordID = UUID_TO_BIN(?)
         `;
@@ -70,7 +72,8 @@ class RewardsRecord {
                 points,
                 rewardType,
                 rewardAmount,
-                status,
+                statuscode,
+                notified,
                 purpose
             FROM RewardsRecord WHERE userID = UUID_TO_BIN(?)
         `;
@@ -97,7 +100,8 @@ class RewardsRecord {
                 points,
                 rewardType,
                 rewardAmount,
-                status,
+                statuscode,
+                notified,
                 purpose
             FROM RewardsRecord WHERE loyaltyProgramID = UUID_TO_BIN(?)
         `;
