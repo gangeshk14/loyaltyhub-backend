@@ -144,7 +144,7 @@ const initDB = async () => {
         DO
         BEGIN
             DELETE FROM AccrualTable
-            WHERE TIME(Date) <= '23:00:00';
+            WHERE Date <= DATE_FORMAT(NOW(), '%Y-%m-%d 23:00:00');
         END;    
     `
 

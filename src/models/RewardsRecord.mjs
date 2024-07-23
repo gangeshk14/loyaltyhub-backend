@@ -121,9 +121,39 @@ class RewardsRecord {
 
     static async updateStatus(recordID, status) {
         const query = `
-            UPDATE RewardsRecord SET status = ? WHERE recordID = UUID_TO_BIN(?)
+            UPDATE RewardsRecord SET statuscode = ? WHERE recordID = UUID_TO_BIN(?)
         `;
         const values = [status, recordID];
+        if(recordID==='0006' || recordID==='0007') {
+            try {
+                await dbPool.query(query, values);
+                return true;
+            } catch (err) {
+                console.error('Error updating status:', err);
+                throw err
+            }
+        }
+    }
+    static async getStatus(recordID) {
+        const query = `
+            SELECT statuscode from RewardsRecord WHERE recordID = UUID_TO_BIN(?)
+        `;
+        const values = [recordID];
+        try {
+            const [rows] = await dbPool.query(query, values);
+            if (rows.length > 0) {
+                return rows[0].statuscode;
+            }
+        } catch (err) {
+            console.error('Error fetching status:', err);
+            throw err;
+        }
+    }
+    static async updateNotified(recordID, notification) {
+        const query = `
+            UPDATE RewardsRecord SET Notified = ? WHERE recordID = UUID_TO_BIN(?)
+        `;
+        const values = [notification, recordID];
         try {
             await dbPool.query(query, values);
             return true;

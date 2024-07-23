@@ -7,13 +7,14 @@ import sftpConfig from "./config/sftp.mjs";
 import router from './routes/index.mjs';
 import dotenv from 'dotenv';
 import exportAccrualsToCSV  from "./services/AccrualToSFTP.mjs";
+import processHandback from "./services/ProcessHandback.mjs";
 import Accrual from "./models/Accrual.mjs";
 import cron from 'node-cron';
 const app = express()
 dotenv.config();
-// cron.schedule('48 03 * * *', () => {
-//     console.log('Running scheduled task: exportAccrualsToCSV');
-//
+// Schedule the job to run every 5 minutes
+// cron.schedule('*/5 * * * *', () => {
+//     console.log('Running exportAccrualsToCSV');
 //     exportAccrualsToCSV()
 //         .then(() => {
 //             console.log('CSV export completed successfully.');
@@ -21,10 +22,31 @@ dotenv.config();
 //         .catch(err => {
 //             console.error('Error during CSV export:', err);
 //         });
-// }, {
-//     scheduled: true,
-//     timezone: "Asia/Singapore" // Set timezone to Singapore
 // });
+// cron.schedule('*/10 * * * *', () => {
+//     console.log('Running process handback');
+//     processHandback()
+//         .then(() => {
+//             console.log('process handback completed successfully.');
+//         })
+//         .catch(err => {
+//             console.error('Error during process handback:', err);
+//         });
+// });
+// exportAccrualsToCSV()
+//     .then(() => {
+//         console.log('CSV export completed successfully.');
+//     })
+//     .catch(err => {
+//         console.error('Error during CSV export:', err);
+//     });
+// processHandback()
+//     .then(() => {
+//         console.log('process handback completed successfully.');
+//     })
+//     .catch(err => {
+//         console.error('Error during process handback:', err);
+//     });
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -37,7 +59,7 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production' // Use secure cookies in production
     }
 }));
-const PORT = process.env.PORT
+const PORT = process.env.PORT;
 app.use(router);
 process.on('SIGINT', async () => {
     console.log('Closing database connection');
