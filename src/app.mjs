@@ -13,26 +13,26 @@ import cron from 'node-cron';
 const app = express()
 dotenv.config();
 // Schedule the job to run every 5 minutes
-// cron.schedule('*/5 * * * *', () => {
-//     console.log('Running exportAccrualsToCSV');
-//     exportAccrualsToCSV()
-//         .then(() => {
-//             console.log('CSV export completed successfully.');
-//         })
-//         .catch(err => {
-//             console.error('Error during CSV export:', err);
-//         });
-// });
-// cron.schedule('*/10 * * * *', () => {
-//     console.log('Running process handback');
-//     processHandback()
-//         .then(() => {
-//             console.log('process handback completed successfully.');
-//         })
-//         .catch(err => {
-//             console.error('Error during process handback:', err);
-//         });
-// });
+cron.schedule('*/5 * * * *', () => {
+    console.log('Running exportAccrualsToCSV');
+    exportAccrualsToCSV()
+        .then(() => {
+            console.log('CSV export completed successfully.');
+        })
+        .catch(err => {
+            console.error('Error during CSV export:', err);
+        });
+});
+cron.schedule('*/10 * * * *', () => {
+    console.log('Running process handback');
+    processHandback()
+        .then(() => {
+            console.log('process handback completed successfully.');
+        })
+        .catch(err => {
+            console.error('Error during process handback:', err);
+        });
+});
 // exportAccrualsToCSV()
 //     .then(() => {
 //         console.log('CSV export completed successfully.');
@@ -73,3 +73,4 @@ if (process.env.NODE_ENV !== 'test') {
         console.log(`Server is running on Port:${PORT}`)
     })
 }
+export default app;
