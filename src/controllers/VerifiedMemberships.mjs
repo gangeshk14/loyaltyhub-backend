@@ -36,7 +36,7 @@ export const addVerifiedMembership = async (req, res) => {
 };
 
 export const getVerifiedMembershipByUser = async (req, res) => {
-    const userID  = req.user.userID;
+    const {userID}  = req.params;
     try {
         const user = await User.findById(userID);
         const membership = await verifiedMemberships.findByUserID(userID);
@@ -46,17 +46,7 @@ export const getVerifiedMembershipByUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({error: 'User not found'});
         }
-        res.status(200).json(membership.map(membership => ({
-            id: membership.id,
-            userID: membership.userID,
-            loyaltyProgramID: membership.loyaltyProgramID,
-            membershipID: membership.membershipID,
-            date: membership.date,
-            firstName: membership.firstName,
-            lastName: membership.lastName,
-            loyaltyProgramName: membership.loyaltyProgramName,
-            loyaltyProgramImage: membership.loyaltyProgramImage.toString('base64'),
-        })));
+        res.status(200).json(membership);
     } catch (err) {
         console.error('Error fetching verified memberships by user ID:', err);
         res.status(500).json({error: 'Failed to fetch verified memberships'});
