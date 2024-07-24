@@ -3,6 +3,7 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import * as net from "node:net";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -14,6 +15,11 @@ const dbPool = mysql.createPool({
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    stream:function(opts) {
+        var socket = net.connect(opts.config.port, opts.config.host);
+        socket.setKeepAlive(true);
+        return socket;
+    },
     ssl:{ca:fs.readFileSync(__dirname+process.env.DB_SSL_PATH)}
 });
 

@@ -16,15 +16,26 @@ describe('Rewards Record', () => {
   let testLoyaltyPrograms;
 
   // Convenient test-helper function to create RewardRecord with a passed in uuid
-  async function createWithID({ recordID, userID, loyaltyProgramID, date, points, rewardType, rewardAmount, status, purpose }) {
+  async function createWithID({ recordID, userID, loyaltyProgramID, date, points,notified, rewardType, rewardAmount, statuscode, purpose }) {
     const query = `
-            INSERT INTO RewardsRecord (recordID, Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Status, Purpose)
+            INSERT INTO RewardsRecord (recordID, Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Statuscode, Purpose)
             VALUES (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?, ?)
         `;
-    await dbPool.query(query, [recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, status, purpose])
+    await dbPool.query(query, [recordID, date, loyaltyProgramID, userID, points, rewardType, rewardAmount, statuscode, purpose])
   }
 
   beforeAll(async () => {
+    await dbPool.query(`INSERT INTO statuscode (code, description) VALUES
+    ('0000', 'success'),
+        ('0001', 'member not found'),
+        ('0002', 'member name mismatch'),
+        ('0003', 'member account closed'),
+        ('0004', 'member account suspended'),
+        ('0005', 'member ineligible for accrual'),
+        ('0006', 'submitted'),
+        ('0007', 'processing'),
+        ('0099', 'unable to process, please contact support for more information');
+        `)
     testUsers = {
       User1: await User.create({
         userName: 'User1',
@@ -97,9 +108,10 @@ describe('Rewards Record', () => {
       loyaltyProgramID: await getProgramId('Test Program Name 1'),
       userID: testUsers.User1.userID,
       points: 0,
+      notified:0,
       rewardType: 'testreward',
       rewardAmount: 5000,
-      status: 'PROCESSING',
+      statuscode: '0006',
       purpose: 'testReward',
     }
     await createWithID(testRewardModel);
@@ -117,7 +129,7 @@ describe('Rewards Record', () => {
       points: 10,
       rewardType: 'testtype2',
       rewardAmount: 50,
-      status: 'REJECTED',
+      statusCode: '0006',
       purpose: 'testPurposes2'
     });
     expect(expected?.recordID).not.toBeNull();
@@ -142,9 +154,9 @@ describe('Rewards Record', () => {
     expect(foundRecordbyLoyaltyProgramId).toEqual(testRewardModel);
   });
   test('should update rewardsRecord Status', async () => {
-    const isUpdatedRecordStatus = await RewardsRecord.updateStatus(testRewardModel.recordID, 'SUCCESSFUL');
+    const isUpdatedRecordStatus = await RewardsRecord.updateStatus(testRewardModel.recordID, '0006');
     const updatedRecord = await RewardsRecord.findById(testRewardModel.recordID);
     expect(isUpdatedRecordStatus).toBe(true);
-    expect(updatedRecord.status).toEqual('SUCCESSFUL');
+    expect(updatedRecord.statuscode).toEqual('0006');
   });
 });
