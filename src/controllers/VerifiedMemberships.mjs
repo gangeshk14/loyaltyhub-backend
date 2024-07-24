@@ -6,7 +6,7 @@ import LoyaltyProgram from "../models/LoyaltyProgram.mjs";
 
 export const addVerifiedMembership = async (req, res) => {
     const {
-        loyaltyProgramName, //also requires update
+        loyaltyProgramName,
         membershipID
     } = req.body;
     try {
@@ -36,7 +36,7 @@ export const addVerifiedMembership = async (req, res) => {
 };
 
 export const getVerifiedMembershipByUser = async (req, res) => {
-    const userID  = req.user.userID
+    const userID  = req.user.userID;
     try {
         const user = await User.findById(userID);
         const membership = await verifiedMemberships.findByUserID(userID);
@@ -64,7 +64,7 @@ export const getVerifiedMembershipByUser = async (req, res) => {
 }
 
 export const getVerifiedMembershipByMembershipID = async (req, res) => {
-    const { loyaltyProgramID, userID } = req.params;
+    const { loyaltyProgramID, userID } = req.body;
     try {
         const user = await User.findById(userID);
         const program = await loyaltyProgram.getLoyaltyProgramById(loyaltyProgramID)
