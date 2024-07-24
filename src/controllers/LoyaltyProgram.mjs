@@ -7,6 +7,7 @@ export const fetchLoyaltyPrograms = async (req, res) => {
       return res.status(404).json({ message: 'Loyalty Programs not found' });
     }
     res.json(loyaltyPrograms.map(loyaltyProgram => ({
+      programID: loyaltyProgram.programID,
       name: loyaltyProgram.name,
       code: loyaltyProgram.code,
       description: loyaltyProgram.description,
