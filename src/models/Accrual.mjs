@@ -27,8 +27,9 @@ class Accrual {
                 rewardAmount,
                 loyaltyCode,
                 rewardRecordID
-      FROM
-        AccrualTable
+            FROM
+            AccrualTable
+            WHERE Date <= DATE_FORMAT(NOW(), '%Y-%m-%d 23:00:00');
       `;
         // WHERE
         // TIME_FORMAT(Date, '%H%i') <= '2300'

@@ -1,13 +1,9 @@
 import { format } from 'date-fns';
 import {stringify} from "csv";
-import path, { dirname } from 'path';
-import fs from 'fs';
-import * as fast from 'fast-csv';
+import RewardsRecord from "../models/RewardsRecord.mjs";
 import Accrual from '../models/Accrual.mjs';
-import { fileURLToPath } from 'url';
 import sftpConfig from '../config/sftp.mjs';
 import Client from 'ssh2-sftp-client';
-import {Readable} from "stream";
 async function generateCSVData(csvData) {
     return new Promise((resolve, reject) => {
         stringify(csvData, { header: true }, (err, output) => {
@@ -54,7 +50,6 @@ const exportAccrualsToCSV = async () => {
             console.error(`Error creating directory ${remoteHandbackBaseDir}:`, err.message);
         }
 
-        // Iterate over each group and create a CSV file
         for (const loyaltyCode in groupedAccruals) {
             if (groupedAccruals.hasOwnProperty(loyaltyCode)) {
                 const csvAccrualData = groupedAccruals[loyaltyCode].map((accrual, index) => {
@@ -93,7 +88,7 @@ const exportAccrualsToCSV = async () => {
                 } catch (err) {
                     console.error('Error during CSV generation:', err);
                 }
-                const handbackFileName = `${loyaltyCode}_ACCRUAL_${currentDate}.txt`;
+                const handbackFileName = `${loyaltyCode}_HANDBACK_${currentDate}.txt`;
                 const remoteHandbackFilePath = `${remoteHandbackBaseDir}/${handbackFileName}`;
                 try {
                     const csvBuffer = await generateCSVData(csvHandbackData);
@@ -102,6 +97,14 @@ const exportAccrualsToCSV = async () => {
                 } catch (err) {
                     console.error('Error during CSV generation:', err);
                 }
+            }
+        }
+        for (const accrual of accruals) {
+            const statusCode = await RewardsRecord.getStatus(accrual.rewardRecordID)
+            if(statusCode ==='0006') {
+                await RewardsRecord.updateStatus(accrual.rewardRecordID, '0007');
+                await RewardsRecord.updateNotified(accrual.rewardRecordID, '0');
+                console.log(`${accrual.rewardRecordID} statuscode updated`);
             }
         }
     } catch (err) {
