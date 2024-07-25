@@ -101,11 +101,9 @@ const exportAccrualsToCSV = async () => {
         }
         for (const accrual of accruals) {
             const statusCode = await RewardsRecord.getStatus(accrual.rewardRecordID)
-            if(statusCode ==='0006') {
-                await RewardsRecord.updateStatus(accrual.rewardRecordID, '0007');
-                await RewardsRecord.updateNotified(accrual.rewardRecordID, '0');
-                console.log(`${accrual.rewardRecordID} statuscode updated`);
-            }
+            await RewardsRecord.updateStatus(accrual.rewardRecordID, '0007');
+            await RewardsRecord.updateNotified(accrual.rewardRecordID, '0');
+            console.log(`${accrual.rewardRecordID} statuscode updated`);
         }
     } catch (err) {
         console.error('Error exporting accruals to CSV', err);
