@@ -29,7 +29,12 @@ class Accrual {
                 rewardRecordID
             FROM
             AccrualTable
-            WHERE Date <= DATE_FORMAT(NOW(), '%Y-%m-%d 23:00:00');
+            WHERE Date <= (
+            CASE
+                WHEN TIME(NOW()) > '23:00:00' THEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d 23:00:00')
+                ELSE DATE_FORMAT(NOW(), '%Y-%m-%d 23:00:00')
+            END
+            );
       `;
         // WHERE
         // TIME_FORMAT(Date, '%H%i') <= '2300'
