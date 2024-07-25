@@ -24,7 +24,6 @@ const uploadFiles = async (remotePaths) => {
             await sftp.put(fileStream, remotePath);
             console.log(`Uploaded ${remotePath}`);
         }
-
         await sftp.end();
         console.log('All files uploaded successfully');
     } catch (err) {
