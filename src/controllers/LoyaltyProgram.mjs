@@ -7,7 +7,6 @@ export const fetchLoyaltyPrograms = async (req, res) => {
       return res.status(404).json({ message: 'Loyalty Programs not found' });
     }
     res.json(loyaltyPrograms.map(loyaltyProgram => ({
-      programID: loyaltyProgram.programID,
       name: loyaltyProgram.name,
       code: loyaltyProgram.code,
       description: loyaltyProgram.description,
@@ -24,10 +23,10 @@ export const fetchLoyaltyPrograms = async (req, res) => {
   }
 };
 
-export const fetchLoyaltyProgramById = async (req, res) => {
+export const fetchLoyaltyProgramByName = async (req, res) => {
   try {
-    const { loyaltyProgramID } = req.params;
-    const loyaltyProgram = await LoyaltyProgram.getLoyaltyProgramById(loyaltyProgramID);
+    const { name } = req.params;
+    const loyaltyProgram = await LoyaltyProgram.getLoyaltyProgramByName(name);
     if (!loyaltyProgram) {
       return res.status(404).json({ message: 'Loyalty Program not found' });
     }
