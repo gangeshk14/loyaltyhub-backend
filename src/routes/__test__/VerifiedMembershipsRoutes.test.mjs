@@ -25,5 +25,16 @@ describe ('VerifiedMembershipsRoutes', () => {
         token = response.body.token;
         const userDetails = request(app).get('/profile');
         userID = response.body.userID;
-    })
+        console.log(userID)
+    });
+
+    // describe ('GET /verifiedmemberships/user/:userID', () => {
+    //     it('should get verified membership by user ID', async () => {
+    //         console.log(req.params)
+    //         const response = await request(app).get(`/verifiedmemberships/user/${userID}`).set('Authorisation', `Bearer ${token}`)
+    //         expect(response.status).toBe(200)
+    //         expect(response.body).toHaveProperty('loyaltyProgramName')
+    //     })
+    // })
+
 })
