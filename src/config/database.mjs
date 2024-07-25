@@ -15,12 +15,12 @@ const dbPool = mysql.createPool({
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    stream:function(opts) {
+    stream: function(opts) {
         var socket = net.connect(opts.config.port, opts.config.host);
         socket.setKeepAlive(true);
         return socket;
     },
-    ssl:{ca:fs.readFileSync(__dirname+process.env.DB_SSL_PATH)}
+    ssl: { ca: fs.readFileSync(__dirname + process.env.DB_SSL_PATH) }
 });
 
 const initDB = async () => {
@@ -41,7 +41,7 @@ const initDB = async () => {
     const createLoyaltyProgramTableQuery = `
         CREATE TABLE IF NOT EXISTS LoyaltyProgram (
             programId BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
-            name VARCHAR(255) NOT NULL,
+            name VARCHAR(255) UNIQUE NOT NULL,
             code VARCHAR(10) NOT NULL,
             description TEXT,
             category ENUM('TRAVEL'),
