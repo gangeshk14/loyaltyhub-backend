@@ -6,7 +6,7 @@ import LoyaltyProgram from "../models/LoyaltyProgram.mjs";
 
 export const addVerifiedMembership = async (req, res) => {
     const {
-        loyaltyProgramName, //also requires update
+        loyaltyProgramName,
         membershipID
     } = req.body;
     try {
@@ -36,27 +36,14 @@ export const addVerifiedMembership = async (req, res) => {
 };
 
 export const getVerifiedMembershipByUser = async (req, res) => {
-    const userID  = req.user.userID
+    const {userID}  = req.params;
     try {
         const user = await User.findById(userID);
         const membership = await verifiedMemberships.findByUserID(userID);
-        if (!membership) {
-            return res.status(404).json({error: 'Record not found'});
-        }
         if (!user) {
             return res.status(404).json({error: 'User not found'});
         }
-        res.status(200).json(membership.map(membership => ({
-            id: membership.id,
-            userID: membership.userID,
-            loyaltyProgramID: membership.loyaltyProgramID,
-            membershipID: membership.membershipID,
-            date: membership.date,
-            firstName: membership.firstName,
-            lastName: membership.lastName,
-            loyaltyProgramName: membership.loyaltyProgramName,
-            loyaltyProgramImage: membership.loyaltyProgramImage.toString('base64'),
-        })));
+        res.status(200).json(membership || []);
     } catch (err) {
         console.error('Error fetching verified memberships by user ID:', err);
         res.status(500).json({error: 'Failed to fetch verified memberships'});
@@ -64,7 +51,7 @@ export const getVerifiedMembershipByUser = async (req, res) => {
 }
 
 export const getVerifiedMembershipByMembershipID = async (req, res) => {
-    const { loyaltyProgramID, userID } = req.params;
+    const { loyaltyProgramID, userID } = req.body;
     try {
         const user = await User.findById(userID);
         const program = await loyaltyProgram.getLoyaltyProgramById(loyaltyProgramID)
