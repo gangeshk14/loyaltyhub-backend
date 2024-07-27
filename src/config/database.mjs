@@ -177,7 +177,7 @@ const initDB = async () => {
                                     'points', RR.Points,
                                     'rewardType', RR.rewardType,
                                     'rewardAmount', RR.rewardAmount,
-                                    'status', SC.description,
+                                    'status', RR.description,
                                     'notified', RR.Notified,
                                     'purpose', RR.Purpose
                                 )
