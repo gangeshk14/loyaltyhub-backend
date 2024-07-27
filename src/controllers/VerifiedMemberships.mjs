@@ -43,7 +43,8 @@ export const getVerifiedMembershipByUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({error: 'User not found'});
         }
-        const mappedMemberships = membership.map(membership => ({
+        const membershipsArray = Array.isArray(membership) ? membership : [];
+        const mappedMemberships = membershipsArray.map(membership => ({
             userID: membership.userID,
             loyaltyProgramID: membership.loyaltyProgramID,
             membershipID: membership.membershipID,
