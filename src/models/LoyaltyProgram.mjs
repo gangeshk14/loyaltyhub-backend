@@ -18,7 +18,8 @@ class LoyaltyProgram {
   static async getAllLoyaltyPrograms() {
     const query = `
       SELECT 
-        *
+        *,
+        BIN_TO_UUID(programId) AS programID
       FROM
         LoyaltyProgramView
       `;
@@ -67,7 +68,7 @@ class LoyaltyProgram {
   static async getLoyaltyProgramByName(name) {
     const query = `
       SELECT 
-        BIN_TO_UUID(programId),
+        BIN_TO_UUID(programId) as programID,
         name,
         code,
         description,
