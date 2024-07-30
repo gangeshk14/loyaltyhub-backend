@@ -78,3 +78,14 @@ export const updateRewardsRecordStatus = async (req, res) => {
         res.status(500).json({error: 'Failed to update status'});
     }
 };
+
+export const updateNotifStatus = async (req, res) => {
+    const { recordID } = req.body;
+    try {
+        await RewardsRecord.updateNotified(recordID, 1);
+        res.status(200).json({message: 'Notif updated successfully'});
+    } catch (error) {
+        console.error('Error updating Notifications:', error);
+        res.status(500).json({error: 'Failed to update Notif'});
+    }
+};
