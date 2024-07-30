@@ -18,7 +18,7 @@ class RewardsRecord {
 
     //Create record
     static async create({ userID, loyaltyProgramId, points, rewardAmount, rewardType, purpose }) {
-
+        const negativePoints = -Math.abs(points);
         const query = `
             INSERT INTO RewardsRecord ( Date, LoyaltyProgramID, UserID, Points, rewardType, rewardAmount, Purpose)
             VALUES (NOW(), UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?, ?, ?)
@@ -26,6 +26,7 @@ class RewardsRecord {
         const values = [loyaltyProgramId, userID, points, rewardType, rewardAmount, purpose];
         try {
             await dbPool.query(query, values);
+            await User.updatePoints(userID, negativePoints);
             // Retrieve the newly inserted record
             return new RewardsRecord({ date: Date(), loyaltyProgramID: loyaltyProgramId, userID: userID, points: points, rewardType: rewardType, rewardAmount: rewardAmount, status: 'SUBMITTED', purpose: purpose });
         } catch (err) {
@@ -161,6 +162,34 @@ class RewardsRecord {
         } catch (err) {
             console.error('Error updating status:', err);
             throw err
+        }
+    }
+    static async getNotifDetails(recordID) {
+        const query = `
+            SELECT 
+                BIN_TO_UUID(userID) as userID,
+                rewardType,
+                rewardAmount,
+                Points
+            FROM RewardsRecord
+            WHERE recordID = UUID_TO_BIN(?)
+        `;
+        const values = [recordID];
+        try {
+            const [rows] = await dbPool.query(query, values);
+            if (rows.length === 0) {
+                return null;
+            }
+            // Return an object with only the desired fields
+            return {
+                userID: rows[0].userID,
+                rewardType: rows[0].rewardType,
+                rewardAmount: rows[0].rewardAmount,
+                pointsUsed: rows[0].Points
+            };
+        } catch (err) {
+            console.error('Error finding rewards record by ID:', err);
+            throw err;
         }
     }
 

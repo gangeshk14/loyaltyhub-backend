@@ -10,29 +10,34 @@ import exportAccrualsToCSV  from "./services/AccrualToSFTP.mjs";
 import processHandback from "./services/ProcessHandback.mjs";
 import Accrual from "./models/Accrual.mjs";
 import cron from 'node-cron';
+import {setupSocketIO, userSockets} from './config/socketio.mjs';
+import http from 'http';
+
 const app = express()
+const server = http.createServer(app);
+const io = setupSocketIO(server);
 dotenv.config();
 // Schedule the job to run every 5 minutes
-cron.schedule('*/5 * * * *', () => {
-    console.log('Running exportAccrualsToCSV');
-    exportAccrualsToCSV()
-        .then(() => {
-            console.log('CSV export completed successfully.');
-        })
-        .catch(err => {
-            console.error('Error during CSV export:', err);
-        });
-});
-cron.schedule('*/10 * * * *', () => {
-    console.log('Running process handback');
-    processHandback()
-        .then(() => {
-            console.log('process handback completed successfully.');
-        })
-        .catch(err => {
-            console.error('Error during process handback:', err);
-        });
-});
+// cron.schedule('*/1 * * * *', () => {
+//     console.log('Running exportAccrualsToCSV');
+//     exportAccrualsToCSV()
+//         .then(() => {
+//             console.log('CSV export completed successfully.');
+//         })
+//         .catch(err => {
+//             console.error('Error during CSV export:', err);
+//         });
+// });
+// cron.schedule('*/1 * * * *', () => {
+//     console.log('Running process handback');
+//     processHandback()
+//         .then(() => {
+//             console.log('process handback completed successfully.');
+//         })
+//         .catch(err => {
+//             console.error('Error during process handback:', err);
+//         });
+// });
 // exportAccrualsToCSV()
 //     .then(() => {
 //         console.log('CSV export completed successfully.');
@@ -69,7 +74,7 @@ process.on('SIGINT', async () => {
 });
 
 if (process.env.NODE_ENV !== 'test') {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log(`Server is running on Port:${PORT}`)
     })
 }

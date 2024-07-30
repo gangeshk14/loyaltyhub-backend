@@ -4,6 +4,7 @@ import RewardsRecord from "../models/RewardsRecord.mjs";
 import Accrual from '../models/Accrual.mjs';
 import sftpConfig from '../config/sftp.mjs';
 import Client from 'ssh2-sftp-client';
+import { io , userSockets } from '../config/socketio.mjs';
 async function generateCSVData(csvData) {
     return new Promise((resolve, reject) => {
         stringify(csvData, { header: true }, (err, output) => {
@@ -101,8 +102,20 @@ const exportAccrualsToCSV = async () => {
         }
         for (const accrual of accruals) {
             const statusCode = await RewardsRecord.getStatus(accrual.rewardRecordID)
+            const notifDetails = await RewardsRecord.getNotifDetails(accrual.rewardRecordID)
+            const userID = notifDetails.userID;
+            const rewardType = notifDetails.rewardType;
+            const rewardAmount = notifDetails.rewardAmount;
+            const socketId = userSockets[userID];
+            if (socketId) {
+                io.to(socketId).emit('notification', { message:`Your request of ${rewardAmount} ${rewardType} has been updated`});
+                await RewardsRecord.updateNotified(accrual.rewardRecordID, 1);
+                console.log('Notification sent');
+              } else {
+                console.log("no user")
+                await RewardsRecord.updateNotified(accrual.rewardRecordID, 0);
+              }
             await RewardsRecord.updateStatus(accrual.rewardRecordID, '0007');
-            await RewardsRecord.updateNotified(accrual.rewardRecordID, '0');
             console.log(`${accrual.rewardRecordID} statuscode updated`);
         }
     } catch (err) {
