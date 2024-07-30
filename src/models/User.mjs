@@ -120,6 +120,40 @@ class User {
             throw err;
         }
     }
+    static async updatePoints(userID, pointsToUpdate) {
+        // Step 1: Retrieve the current points count
+        if (typeof pointsToUpdate !== 'number' || !Number.isInteger(pointsToUpdate)) {
+            throw new Error('Invalid points value provided. Points must be an integer.');
+        }
+        const findUserQuery = `
+            SELECT pointsCount
+            FROM UserView
+            WHERE userID = UUID_TO_BIN(?)
+        `;
+        const findUserValues = [userID];
+        try {
+            const [rows] = await dbPool.query(findUserQuery, findUserValues);
+            if (rows.length === 0) {
+                throw new Error('User not found');
+            }
+
+            const currentPoints = rows[0].pointsCount;
+            const newPointsCount = currentPoints + pointsToUpdate;
+
+            // Step 2: Update the points count in the database
+            const updatePointsQuery = `
+                UPDATE User
+                SET pointsCount = ?
+                WHERE userID = UUID_TO_BIN(?)
+            `;
+            const updatePointsValues = [newPointsCount, userID];
+            await dbPool.query(updatePointsQuery, updatePointsValues);
+
+        } catch (err) {
+            console.error('Error updating user points:', err);
+            throw err;
+        }
+    }
 
     static async findByEmail(userEmail) {
         const query = `
