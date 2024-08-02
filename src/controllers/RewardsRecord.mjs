@@ -10,10 +10,10 @@ export const createRewardRecord = async (req, res) => {
     } = req.body;
     try {
         const loyaltyProgram = await LoyaltyProgram.getLoyaltyProgramByName(loyaltyProgramName);
-        const programID = loyaltyProgram.programID;
-        if (!(loyaltyProgram)) {
-            throw new Error('LoyaltyProgram not found');
+        if (!loyaltyProgram){
+            return res.status(404).json({error: 'LoyaltyProgram not found'});
         }
+        const programID = loyaltyProgram.programID;
         const currencyRate = loyaltyProgram.currencyRate;
         const user = req.user;
         const rewardAmount = points * currencyRate;
