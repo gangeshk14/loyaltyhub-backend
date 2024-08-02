@@ -2,6 +2,16 @@ import dbPool from "../../config/database.mjs"
 import VerifiedMemberships from "../VerifiedMemberships.mjs"
 import User from "../User.mjs"
 import LoyaltyProgram from "../LoyaltyProgram.mjs";
+
+function generateRandomBinaryString(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
 async function createUserAndGetId() {
     let testUser;
     let testUserId;
@@ -44,6 +54,13 @@ async function createLoyaltyProgramAndGetId() {
         `
     const [resultId] = await dbPool.query(getProgramIdQuery,[loyaltyProgramData[0]]);
     programId = resultId[0].programID
+    const insertImageQuery = `
+            INSERT INTO LoyaltyProgramImage (LoyaltyProgramID, image_data)
+            VALUES (UUID_TO_BIN(?), ?)
+        `;
+
+    const imageData = generateRandomBinaryString(100);
+    await dbPool.query(insertImageQuery, [programId, imageData]);
     return programId;
 }
 
@@ -71,7 +88,6 @@ describe (`VerifiedMemberships`, () => {
             userID: testUserId,
             loyaltyProgramID: testLoyaltyProgramId,
             membershipID: "MA-12345",
-            date: new Date("2024-01-01"),
             firstName: "Test",
             lastName: "User"
         });
@@ -88,7 +104,6 @@ describe (`VerifiedMemberships`, () => {
             userID: testUserId,
             loyaltyProgramID: testLoyaltyProgramId,
             membershipID: "MB-12345",
-            date: new Date("2024-01-01"),
             firstName: "Test",
             lastName: "User"
         });
@@ -96,6 +111,7 @@ describe (`VerifiedMemberships`, () => {
         const foundMembership = await VerifiedMemberships.findByUserID(testUserId)
         expect(foundMembership).not.toBeNull();
         expect(foundMembership[0].loyaltyProgramName).toBe('Test Program');
+        // expect(foundMembership.loyaltyProgramName).toBe('Test Program');
         expect(base64regex.test(foundMembership[0].loyaltyProgramImage)).toBe(true);
 
     });
@@ -106,7 +122,6 @@ describe (`VerifiedMemberships`, () => {
             userID: testUserId,
             loyaltyProgramID: testLoyaltyProgramId,
             membershipID: "DS-12345",
-            date: new Date("2024-01-01"),
             firstName: "Test",
             lastName: "User"
         });
