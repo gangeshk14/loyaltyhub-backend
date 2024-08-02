@@ -18,26 +18,6 @@ const server = http.createServer(app);
 const io = setupSocketIO(server);
 dotenv.config();
 // Schedule the job to run every 5 minutes
-// cron.schedule('*/1 * * * *', () => {
-//     console.log('Running exportAccrualsToCSV');
-//     exportAccrualsToCSV()
-//         .then(() => {
-//             console.log('CSV export completed successfully.');
-//         })
-//         .catch(err => {
-//             console.error('Error during CSV export:', err);
-//         });
-// });
-// cron.schedule('*/1 * * * *', () => {
-//     console.log('Running process handback');
-//     processHandback()
-//         .then(() => {
-//             console.log('process handback completed successfully.');
-//         })
-//         .catch(err => {
-//             console.error('Error during process handback:', err);
-//         });
-// });
 // exportAccrualsToCSV()
 //     .then(() => {
 //         console.log('CSV export completed successfully.');
@@ -74,6 +54,26 @@ process.on('SIGINT', async () => {
 });
 
 if (process.env.NODE_ENV !== 'test') {
+    cron.schedule('*/2 * * * *', () => {
+        console.log('Running exportAccrualsToCSV');
+        exportAccrualsToCSV()
+            .then(() => {
+                console.log('CSV export completed successfully.');
+            })
+            .catch(err => {
+                console.error('Error during CSV export:', err);
+            });
+    });
+    cron.schedule('*/3 * * * *', () => {
+        console.log('Running process handback');
+        processHandback()
+            .then(() => {
+                console.log('process handback completed successfully.');
+            })
+            .catch(err => {
+                console.error('Error during process handback:', err);
+            });
+    });
     server.listen(PORT, () => {
         console.log(`Server is running on Port:${PORT}`)
     })

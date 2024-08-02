@@ -88,7 +88,6 @@ describe (`VerifiedMemberships`, () => {
             userID: testUserId,
             loyaltyProgramID: testLoyaltyProgramId,
             membershipID: "MA-12345",
-            date: new Date("2024-01-01"),
             firstName: "Test",
             lastName: "User"
         });
@@ -123,7 +122,6 @@ describe (`VerifiedMemberships`, () => {
             userID: testUserId,
             loyaltyProgramID: testLoyaltyProgramId,
             membershipID: "DS-12345",
-            date: new Date("2024-01-01"),
             firstName: "Test",
             lastName: "User"
         });
