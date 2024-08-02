@@ -19,7 +19,8 @@ class LoyaltyProgram {
     const query = `
       SELECT 
         *,
-        BIN_TO_UUID(programId) AS programID
+        BIN_TO_UUID(programId) AS programID,
+        subCategory AS subcategory
       FROM
         LoyaltyProgramView
       `;
@@ -73,7 +74,7 @@ class LoyaltyProgram {
         code,
         description,
         category,
-        subCategory,
+        subCategory as subcategory,
         currencyName,
         currencyRate,
         company,
