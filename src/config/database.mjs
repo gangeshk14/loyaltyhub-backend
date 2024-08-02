@@ -45,7 +45,7 @@ const initDB = async () => {
             code VARCHAR(10) NOT NULL,
             description TEXT,
             category ENUM('TRAVEL'),
-            subCategory ENUM('HOTEL','AIRLINE'),
+            subCategory ENUM('HOTEL','AIRLINE','CHARITY'),
             currencyName VARCHAR(255),
             currencyRate FLOAT NOT NULL,
             company VARCHAR(255),

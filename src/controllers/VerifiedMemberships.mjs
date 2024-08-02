@@ -4,6 +4,7 @@ import dbPool from "../config/database.mjs";
 import loyaltyProgram from "../models/LoyaltyProgram.mjs";
 import LoyaltyProgram from "../models/LoyaltyProgram.mjs";
 
+
 export const addVerifiedMembership = async (req, res) => {
     const {
         loyaltyProgramName,
@@ -39,10 +40,10 @@ export const getVerifiedMembershipByUser = async (req, res) => {
     const {userID}  = req.params;
     try {
         const user = await User.findById(userID);
-        const membership = await verifiedMemberships.findByUserID(userID);
         if (!user) {
             return res.status(404).json({error: 'User not found'});
         }
+        const membership = await verifiedMemberships.findByUserID(userID);
         const membershipsArray = Array.isArray(membership) ? membership : [];
         const mappedMemberships = membershipsArray.map(membership => ({
             userID: membership.userID,
