@@ -8,7 +8,12 @@ import * as net from "node:net";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-dotenv.config();
+if (process.env.NODE_ENV === 'devtest') {
+    dotenv.config({ path: '.env.dev.test' });
+    console.log("we are in dev test")
+} else {
+    dotenv.config();
+}
 const dbPool = mysql.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,

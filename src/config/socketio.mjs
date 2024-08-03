@@ -1,7 +1,14 @@
 import { Server as SocketIOServer } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv'
 const userSockets = {};
 let io;
+if (process.env.NODE_ENV === 'devtest') {
+    dotenv.config({ path: '.env.dev.test' });
+    console.log("we are in dev test")
+} else {
+    dotenv.config();
+}
 const setupSocketIO = (server) => {
     io = new SocketIOServer(server, {
         cors: {

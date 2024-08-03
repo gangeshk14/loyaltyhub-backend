@@ -2,7 +2,12 @@ import Client from 'ssh2-sftp-client';
 import fs from 'fs'
 import dotenv from 'dotenv';
 import {dirname} from "path";
-dotenv.config();
+if (process.env.NODE_ENV === 'devtest') {
+    dotenv.config({ path: '.env.dev.test' });
+    console.log("we are in dev test")
+} else {
+    dotenv.config();
+}
 const sftpConfig = {
     host: process.env.SFTP_HOST,
     port: process.env.SFTP_PORT || 22, // Default to port 22 if not specified

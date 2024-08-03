@@ -7,6 +7,7 @@
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --testPathPattern=src/models/__test__",
     "test:integration": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --testPathPattern=src/routes/__test__",
     "test:system": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --testPathPattern=src/__test__",
+    "test:dev":"NODE_ENV=devtest node src/app.mjs",
     "start:dev": "nodemon src/app.mjs",
     "start": "node src/app.mjs"
   },
