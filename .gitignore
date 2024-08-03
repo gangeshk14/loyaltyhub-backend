@@ -3,4 +3,5 @@ node_modules/
 src/config/DigiCertGlobalRootCA.crt.pem
 **/.DS_Store
 .env.test
+.env.dev.test
 .ec2sftp
