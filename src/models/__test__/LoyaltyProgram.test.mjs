@@ -59,8 +59,8 @@ describe('Loyalty Program ', () => {
         const resultImage = await dbPool.query(insertImageQuery, loyaltyImageData);
     });
     afterAll(async () => {
-        // await dbPool.query(`DROP DATABASE lhdbtest`);
-        // await dbPool.query(`CREATE DATABASE lhdbtest`);
+        await dbPool.query(`DROP DATABASE lhdbtest`);
+        await dbPool.query(`CREATE DATABASE lhdbtest`);
         await dbPool.end();
     });
     test('should retrieve all loyalty program with image', async () => {
